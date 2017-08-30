@@ -130,12 +130,10 @@ const shortExclams = exclams.filter(str => str.length<2)
 */
 
 // use builtin .map method for creating list items
-const friends = ['me', 'you', 'doggies'];
+const friends = ['me', 'you', 'Tsaggui', 'doggies'];
 <ul>
 	{ friends.map(name => (
-		<li>
-			{name}
-		</li>
+		<li>{name}</li>
 	))}
 </ul>
 

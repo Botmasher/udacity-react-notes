@@ -125,7 +125,7 @@ class ContactList extends React.Component { 	// could also see: class ContactLis
 	}
 }
 ReactDOM.render(
-	<ContactList/>
+	<ContactList/>,
 	document.getElementByID('root')
 )
 
@@ -137,7 +137,7 @@ ReactDOM.render(
 	- use Babel to accomplish that
 		- run it through a build tool like Webpack
 		- this bundles our assets (html, css, imgs, ...) for web projects
-	- use FB's Create React App package to manage all the setup for us!
+	- use FB's Create React App package to manage all the setup for us
 		- touted as zero-setup solution!
 		- install it through npm
 
@@ -163,7 +163,6 @@ ReactDOM.render(
 	- index.js: 			this is where the rendering is happening
 	- public index.html: 	the html doc that all this JS is running in (incl <div id="root"></div>)
 	- readme: 				detailed instructions and guide
- 
  */
 
 
@@ -186,8 +185,8 @@ ReactDOM.render(
 		- make sure each component is useful on its own
  */
 
- //
-  class ContactList extends React.Component {
+// use props to make contactlist component reusable and change who's in the list
+class ContactList extends React.Component {
 	render() { 
 		const people = this.props.contacts 			// store prop passed to ContactList
 
@@ -202,7 +201,7 @@ class App extends React.Component {
 	render() {
 		return (
 			<div className="App">
-				<ContactList contacts = {[
+				<ContactList contacts = {[ 		// where I pass to the prop
 					{name: 'Ayesir'},
 					{name: 'Beesaur'},
 					{name: 'Ceesimus'}

@@ -1,0 +1,660 @@
+/*
+ * 	Lesson 3: State Management
+ */
+
+
+
+/* 1. Introduction
+
+	- props: pass data into components
+	- functional components: more intuitive way to create them
+	- control components: hook up forms to component state
+
+	- take a look at a simple app, use it and imagine what components go into making it
+
+	- Remove default files since React generates lots of them
+		1) delete boilerplate: 	src/App.css
+		2) delete boilerplate: 	src/Logo.svg
+		3) del all content in: 	src/index.css
+		4) del our content in: 	src/App.js
+	
+	- Add our starter files
+	https://github.com/udacity/reactnd-contacts-complete/commit/6f38f078634d104a62e3024cab4cc2d592dd82f6
+ 		1) create dir: 			src/icons
+ 		2) add icons to: 		src/icons
+ 		3) add project styles: 	src/index.css
+ 		4) create dir: 			src/utils
+ 		5) add file: 			src/utils/ContactsAPI.js
+ 		6) add file: 			src/ImageInput.js
+ 		7) edit render(): 		src/App.js
+ 			- return <div>Hello World</div>
+
+ 	- Backend Server
+ 		- we'll use a simple Node/Express App so we can focus on React
+ 		- this is to store our contacts on a backend server
+
+ 		1) clone the project: 		git clone https://github.com/udacity/reactnd-contacts-server
+ 		2) install dependencies: 	npm install
+ 		3) start the server: 		node server.js
+ 		
+ 		- you now run 2 servers locally
+ 			- front-end port 3000: 	npm start
+ 			- back-end port 50001: 	node server.js
+
+ */
+
+
+
+
+ /* Pass data with Props
+ 	- props are to components as args are to functions!
+ 	- use intuitions about funcs to pass custom attributes
+ 	- pass component a value (an ATTRIBUTE)
+ 	- multiple attributes are passed individually just like HTML syntax
+ 		<Clock time={Date.now()} zone='PDT' />
+ 	- access any attributes inside a component using this.props.propName
+ 	- props are READ-ONLY
+
+ 	- critical takeaway:
+ 		1) pass prop through <ComponentName propName="value" />
+ 		2) access prop inside ComponentName class through this.props.propName
+ */
+
+// Build A Component! - map over list of contacts and display them
+
+// create ListContacts.js
+import React, { Component } from 'react'
+
+class ListContacts extends Component {
+	render() {
+		return (
+			<ol className = 'contact-list'>
+				// map over passed-in prop
+				{this.props.contacts.map((contact) =>
+					<li key={contact.id}>
+						{contact.name}
+					</li>
+				))}
+			</ol>
+		)
+	}
+}
+
+export default ListContacts		// be sure to export it so we can import it inside our App.js
+
+
+// In App.js - add sample contact list and pass component a prop 
+import ListContacts from './ListContacts'
+
+const contacts = [
+  {
+    "id": "ryan",
+    "name": "Ryan Florence",
+    "email": "ryan@reacttraining.com",
+    "avatarURL": "http://localhost:5001/ryan.jpg"
+  },
+  {
+    "id": "michael",
+    "name": "Michael Jackson",
+    "email": "michael@reacttraining.com",
+    "avatarURL": "http://localhost:5001/michael.jpg"
+  },
+  {
+    "id": "tyler",
+    "name": "Tyler McGinnis",
+    "email": "tyler@reacttraining.com",
+    "avatarURL": "http://localhost:5001/tyler.jpg"
+  }
+]
+
+class App extends Component {
+	render() {
+		return (
+			<div>
+				<ListContacts contacts={contacts} /> 	// pass array to component
+			</div>
+		)
+	}
+}
+
+
+// Back in ListContacts.js, list a profile entry with avatar and some UI
+class ListContacts extends Component {
+	render() {
+		return (
+			// update the list by adding some interesting UI
+			<ol className = 'contact-list'>
+				// iterate over contacts prop passed from App.js
+				// (note that contacts is an array of objects)
+				{this.props.contacts.map(contact => (
+
+					// create profile UI for each contacts obj
+					<li key={contact.id} className='contact-list-item'>
+						
+						// display the .avatarURL using CSS url functional notation
+						// double braces are result of passing an {obj} inside the {JS}
+						<div className='contact-avatar' style={{
+							backgroundImage: `url(${contact.avatarURL})`
+						}}/>
+						
+						// basic block displaying certain properties from the obj
+						<div className='contact-details'>
+							<p>{contact.name}</p>
+							<p>{contact.email}</p>
+						</div>
+						
+						// a delete button (we'll end up using an X image for it)
+						<button className='contact-remove'>
+							Remove
+						</button>
+
+					</li>
+				))}
+			</ol>
+		)
+	}
+}
+
+	// Some syntax (from me)
+	// 	- when mapping, open the iteration body with () not {}
+	// 	- otherwise you get errors like "Expected assignment and instead saw expression"
+	// 	- keep in mind that {} mean something specific when using JSX!
+
+
+
+
+/* 3. Functional Components
+	- React updated to have "Stateless Functional Components"
+	- if all your component has is a render(), you can use functional component
+	- React passes props as first arg to the stateless functional component
+
+	- ADVANTAGES OF THIS OPTION
+		- no creating an entire class for a component
+		- just takes input and gives you UI output, simply
+		- no this kw to deal with
+
+	- WHEN TO RECONSIDER THIS OPTION
+		- when need to initialize some data
+		- when component has no props
+		- when component does not use JSX
+ */
+function User(props) {
+	return (
+		<p> Username : {props.username} </p>
+	)
+}
+
+// apply this knowledge to the ListContacts component!
+function ListContacts(props) { 					// props is the first arg
+	return (
+		<ol className = 'contact-list'>
+			{props.contacts.map(contact => ( 	// we're getting props from that first arg
+				<li key={contact.id} className='contact-list-item'>
+					<div className='contact-avatar' style={{
+						backgroundImage: `url(${contact.avatarURL})`
+					}}/>
+					<div className='contact-details'>
+						<p>{contact.name}</p>
+						<p>{contact.email}</p>
+					</div>
+					<button className='contact-remove'>
+						Remove
+					</button>
+
+				</li>
+			))}
+		</ol>
+	)
+}
+
+// To be clear, the following two are thus equivalent
+class Email extends React.Component {
+	render() {
+		return (<div>{props.text}</div>);
+	}
+};
+const Email = (props) => {
+	<div>{props.text}</div>
+};
+
+
+
+
+/* 4. Add State to Component
+	- State Management as perhaps "best part of React"
+	- separate out how component looks vs current state of app
+		- how it looks is merely a function of the application's state
+		- how does my app change based on the change in state?
+	- props are read-only immutable data
+	- mutable data is managed by component and often reps changes by user (e.g. button click)
+	- access through this.state.stateName
+
+	- MAJOR Benefits:
+		- we don't have to think about which parts of the page change upon update
+		- we don't need to decide how to re-render the page efficiently
+		- Reconciliation (comparing prev and new outputs for changes) is automatic
+		- we just have to think about updating state!
+ */
+
+// change to the lang - put the state object directly inside class as CLASS FIELD
+class User extends React.Component {
+	state = {
+		username: 'Xyzaz'
+	}
+}
+// as opposed to doing this in the constructor per FB's Setting the Initial State Docs
+class User extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			username: 'Xyzaz'
+		}
+	}
+}
+
+// App.js - move contacts variable into App Component's state so it can see it and update state
+class App extends Component {
+	state = { 						// now App can manage this piece of state internally
+		contacts = [
+			...
+		]
+	}
+	...
+		<ListContacts contacts={this.state.contacts} /> 	// pass it to the component
+	...
+}
+// Rule of thumb: if you use piece of state to render some UI, state should live in that component
+	// we'll see this in action when we delete contacts
+
+/* NONONO! /!\ PROPS IN INITAL STATE ANTIPATTERN /!\
+ 	
+ 	- avoid doing things like this please
+
+ 	this.state = {
+		user: props.user
+ 	}
+
+ 	- this is an "antipattern"
+ 	- it's error prone
+ 	- it will only get those props when component is first created
+ 	- it will not update the state automatically if props ever update
+ 		- only updated if component is "refreshed"
+	- it deviates from a dependable "source of truth"
+		- props and states are two data sources
+		- so hooking one into the other duplicates data
+ */
+
+
+
+
+/* 5. Update state with setState
+	- use setState inside a component
+	- pass previous state as first arg
+	- returns an object that will be merged with current state to form a new state
+
+	- by default, rerender ENTIRE app and update the UI
+
+		UI=fn(state) 	// "in React, your UI is just a function of your state"
+
+ */
+
+ // Pattern 1: you pass setState a function
+ this.setState((prevState) => {
+ 	count: prevState.count + 1 		// when NEW state depends on PREV state!
+ }))
+
+// Pattern 2: you pass setState an object
+this.setState({
+	username: 'Xaxix' 				// when NEW state is independent of PREV state!
+})
+
+/*
+	In App.js - allow deleting a contact
+	- notice that the contacts state is in App component
+	- notice also that the delete button lives in ListContacts
+	- resolve this by creating a function that we'll pass as a prop to ListContacts
+	- this is a COMMON PATTERN in React: create app function, pass to component to do work
+*/
+
+// inside App.js's App component
+...
+	removeContact = (contact) => {
+		// Pattern 1: take in func bc updating prev state
+		this.setState((state) => ({
+			// filter in all of the contacts that aren't the removed one
+			contacts: state.contacts.filter((c) => c.id !== contact.id)
+		}))
+	} 	// we should end up with a merged obj that represents brand new contact state
+	render() {
+		return (
+			<div>
+				<ListContacts onDeleteContact={this.removeContact} contacts={this.state.contacts} />
+			</div>
+		)
+	}
+
+// inside ListContacts.js
+	...
+	// arrow function will be invoked on the specific contact
+	// - this in turn invokes our removeContact method above passing it the spec contact
+	// - the spec contact is coming from our .map that this is running inside of
+	<button onClick={ () => props.onDeleteContact(contact) } className='contact-remove'>
+	...
+
+// Extra: consider that you can set states of objects independently
+// 	- imagine an Email component with state={subject:'',message:''}
+// 	- below we just update the subject but leave the message blank
+this.setState({
+	subject: 'Hi!'
+})
+
+/* Potential gotchas
+	- .state does not trigger component to auto rerender
+	- setState() does trigger render(), since component also calls render() when setState() merges
+	- setState() should not be called within component's render() method
+	- we expect the state to change usually due to user input
+ */
+
+
+
+
+/* PropTypes
+ 	- a package that does type-checking on props
+ 		- also allows setting if a prop is required or not
+ 	- makes sure we don't get e.g. an object when we expect an array
+ 	- use to check whenever anyone passes something to our component
+
+ 	npm install --save prop-types
+
+ 	- make sure to restart the contacts app server
+
+ */
+
+ // add proptypes to the imports
+import PropTypes from 'prop-types' 	// from the package installed above
+// OR
+import React, { Component, PropTypes } from 'react' // if we're using React.Component
+
+// add a proptype to your stateless functional component
+...
+ListContacts.propTypes = {
+	contacts: PropTypes.array.isRequired,
+	onDeleteContact: PropTypes.func.isRequired
+}
+...
+	// - notice this serves as nice documentation for our component
+	// - also notice we now get warnings in the console if fail proptype checks
+
+
+
+
+/* Controlled Components
+	
+	"A component that renders a form, but the source of truth for that form state lives inside
+	of the component state rather than inside of the DOM"
+
+	- typically form state lives inside of the DOM
+	- but React is all about state management
+	- so how? with Controlled Components!
+		- called Controlled bc "React is controlling the state of the form"
+ */
+
+// Component to render a form with a single input element
+// 	- this is a "true controlled component" bc React controls email property of state
+class NameForm extends React.Component {
+	state = {
+		email: ''
+	}
+	render() {
+		return (
+			<form>
+				<input type="text" value={this.state.email} />
+			</form>
+		)
+	}
+}
+
+
+// allow input field to change using a handleChange method
+class NameForm extends React.Component {
+	state = {
+		email: ''
+	}
+	handleChange = (event) => {
+		this.setState({email: event.target.value}) 		// whenever input changes
+	}
+	render() {
+		return (
+			<form>
+				<input type="text" value={this.state.email} onChange={this.handleChange} />
+			</form>
+		)
+	}
+}
+
+/*
+	Benefits
+	- support instant input validation
+	- conditionally disable/enable buttons
+	- enforce input formats
+	- update your UI based on the form itself
+
+	Uncontrolled Pattern for doing this ("typical", not managing state)
+	1) have input field write directly to the DOM
+	2) don't manage state inside of React
+	3) grab the value from the input field from the DOM
+	- Rule of thumb: use controlled whenever input changes more than just the field itself
+	- e.g. we want to filter results and display text "Now showing 12 of 100 results"
+	- in above case we want React to manage state rather than stick form data in DOM somewhere
+
+	React Developer Tools
+	https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi
+	- inspect your component hierarchy along with respective props and states
+		- it's nice to see the tree structure
+		- it's even nicer to see props and states of a given component
+	- install the Chrome extension and check out the React tab in the console
+ */
+
+// build out the search input section above the contacts list
+//	- note that insteead of binding state of query field to the field, we do the opposite!
+class ListContacts extends Component {
+	static PropTypes = {
+		contacts: PropTypes.array.isRequired,
+		onDeleteContact: PropTypes.func.isRequired
+	}
+
+	state = {
+		query: '' 		// add query string for our search
+	}
+
+	updateQuery = (query) => {
+		this.setState({ query:query.trim() }) 	// pass obj not func bc not based on prev state
+	}
+
+	render() {
+		// add an input field
+		// - set the value attrib to our query state
+		// - set the onChange attrib to our updateQuery method
+		// - (React is giving us that field event obj that we pass to our update method)
+		return (
+			<div className='list-contacts'>
+				{JSON.stringify(this.state)} 	// added so you can watch the query state update
+				<div className='list-contacts-top'>
+					<input
+						className='search-contacts'
+						type='text'
+						placeholder='Search contacts'
+						value={this.state.query}
+						onChange={(event) => this.updateQuery(event.target.value)}
+					/>
+				</div>
+			...
+		)
+	}
+}
+
+/* Consider the chain of events above:
+ 	1) input field value is the query state piece
+ 	2) onChange event, an event listener invokes updateQuery, passing it target value
+ 	3) updateQuery calls setState() to change state to the target value
+ 	4) setState merges the new state to update the component's internal state
+ 	4) the value of the input field is now the updated query state piece
+
+	Now add some filtering with the help of two packages!
+	- install escape-string-regexp
+	- install sort-by
+
+	npm install --save escape-string-regexp sort-by
+
+ */
+
+// whenever we type into input field we want to filter our contacts
+import escapeRegExp from 'escape-string-regexp'
+import sortBy from 'sort-by'
+
+// only map over contacts that match a certain pattern
+	...
+	render() {
+		let showingContacts
+		if (this.state.query) {
+			// build a regex
+			// - escapeRegExp() treats it as string literal rather than special regex chars
+			// - 'i' tells it to ignore case
+			const match = new RegExp(escapeRegExp(this.state.query), 'i')
+			// filter for instances where contact name matches our specific regex
+			showingContacts = this.props.contacts.filter((contact) => match.test(contact.name)) 
+		} else {
+			showingContacts = this.props.contacts 	// whatever contacts initially were
+		}
+
+		// use the native .sort method and imported sortBy helper
+		// 	- sortBy allows us to sort by a specific property in an array of objects
+		showingContacts.sort(sortBy('name'))
+		
+		...
+		// map over showingContacts instead of all this.props.contacts
+		showingContacts.map((contact) => {
+			...
+		})
+	}
+
+
+// Use destructuring to clean up code
+	...
+	render() {
+		// destructure props and state into prettier variables
+		const { contacts, onDeleteContact } = this.props
+		const { query } = this.state
+
+		// now check out our cleaner references to this.state.query, this.props.contacts.filter, etc.
+		let showingContacts
+		if (query) {
+			const match = new RegExp(escapeRegExp(query), 'i')
+			showingContacts = contacts.filter((contact) => match.test(contact.name)) 
+		} else {
+			showingContacts = contacts
+		}
+		showingContacts.sort(sortBy('name'))		
+		...
+
+
+// Display the contacts count in a text (how many it's showing out of the total)
+// 	- also allow us to reset the filter
+// 	- the principle of managing state and having UI look certain way based on that state enters here
+	...
+	render() {
+		const { contacts, onDeleteContact } = this.props
+		const { query } = this.state
+
+		let showingContacts
+		
+		if (query) {
+			const match = new RegExp(escapeRegExp(query), 'i')
+			showingContacts = contacts.filter((contact) => match.test(contact.name)) 
+		} else {
+			showingContacts = contacts
+		}
+
+		showingContacts.sort(sortBy('name'))		
+		
+		return (
+			<div className='list-contacts'>
+				<div className='list-contacts-top'>
+					<input
+						className='search-contacts'
+						type='text'
+						value={query}
+						onChange=(event=>this.updateQuery(event.target.value))
+						placeholder='Search contacts'
+					/>
+				</div>
+
+				// show some UI if not showing all contacts
+				{showingContacts.length !== contacts.length && (
+					<div>Hello!</div>
+				)}
+		...
+
+
+// Now build out our UI for contacts currently being shown
+	return (
+		<div className='list-contacts'>
+			<div className='list-contacts-top'>
+			...
+			</div>
+
+			// show some UI if not showing all contacts
+			{showingContacts.length !== contacts.length && (
+				<span>Now showing {showingContacts.length} of {contacts.length} total</span>
+			)}
+	...
+
+
+// Finally add a button to reset our state
+	...
+	updateQuery = (query) => {
+		this.setState({ query: query.trim() })
+	}
+	// add a new method for our button
+	clearQuery = () => {
+		this.setState({ query: '' }) // app rerenders, else of if(query) runs, shows all props.contacts
+	}
+	...
+	render(){
+		...
+		return (
+			<div className='list-contacts'>
+				<div className='list-contacts-top'>
+				...
+				</div>
+
+				// add the button to rerender app and display all contacts again
+				{showingContacts.length !== contacts.length && (
+					// wrap in div because sibling elements need to be nested
+					<div className = 'showing-contacts'>
+						<span>Now showing {showingContacts.length} of {contacts.length} total</span>
+						// new!
+						<button onClick={() => this.clearQuery()}>Show all</button>
+					</div>
+				)}
+		...
+
+
+/* Controlled Components, True or False? (hint: all true but one!)
+	- Each update to state has an associated handler func
+	- Form elements receive current value via an attribute
+	- Form input values are normally stored in the component state
+	- <textarea> and <select> cannot be controlled elements
+	- Event handlers for a controlled elem update component's state
+ */
+
+
+ /* Wrap up 
+	- Do you want a component to store mutable local data? Consider using .state!
+	- Do you want input fields to modify things in your app? Consider controlled components!
+	- Do you want your info to stay rather static and read-only? Consider using .props instead!
+	- Remember that both .props and .state are objects, and changes trigger rerenders
+		- BUT they play different roles in your app
+		- this is bc props are read-only to the component
+		- and bc state is mutable, easy to update via .setState and can be hooked into by fields
+  */

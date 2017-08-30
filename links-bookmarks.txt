@@ -1,0 +1,51 @@
+-------
+1 REACT
+-------
+
+Composition - example implementing string capitalization:
+https://www.linkedin.com/pulse/compose-me-function-composition-javascript-kevin-greene
+|
+Composition - build composable functions then write functional.js lib containing compose and pipe:
+https://hackernoon.com/javascript-functional-composition-for-every-day-use-22421ef65a10
+
+shouldComponentUpdate and are the rendered DOM elems equiv React updates decision tree:
+https://facebook.github.io/react/docs/optimizing-performance.html#avoid-reconciliation
+|
+Diffing algorithm that decides to update:
+https://facebook.github.io/react/docs/reconciliation.html#the-diffing-algorithm
+
+How to think in React:
+https://facebook.github.io/react/docs/thinking-in-react.html
+
+Components - Stateless vs Stateless Functional vs Functional:
+https://tylermcginnis.com/functional-components-vs-stateless-functional-components-vs-stateless-components/
+
+Where should my state live?
+https://facebook.github.io/react/docs/thinking-in-react.html#step-4-identify-where-your-state-should-live
+|
+Using state correctly:
+https://facebook.github.io/react/docs/state-and-lifecycle.html
+
+PropTypes type checking:
+https://facebook.github.io/react/docs/typechecking-with-proptypes.html
+
+Regular Expressions for pattern matching:
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+
+
+-------
+2 REDUX
+-------
+
+
+--------
+3 NATIVE
+--------
+
+
+-----
+SLACK
+-----
+
+React Cheatsheet:
+http://ricostacruz.com/cheatsheets/react.html
