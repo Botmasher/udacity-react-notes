@@ -1,0 +1,37 @@
+Syllabus
+- see below for 4 parts and 3 projects that make up this nanodegree
+- below that, check out the extracurricular work that supports this nanodegree
+- from email:
+	- Project Reviews: expert code reviewers for the React projects you build on your own
+	- Community Resources: dedicated support from experienced React mentors through Live Help support
+	- React Nanodegree Slack: share with fellow React learners
+
+Student Handbook
+https://d17h27t6h515a5.cloudfront.net/topher/2017/June/594ad0d0_react-nanodegree-student-handbook/react-nanodegree-student-handbook.pdf?utm_medium=email&utm_campaign=reactnd-first-day&utm_source=blueshift&utm_content=reactnd-first-day&bsft_eid=bf6b1172-4b06-4109-b6dd-e8cf7241aacc&bsft_clkid=342e568c-9281-4b11-9972-14cc8e185b04&bsft_uid=f9c32db9-7b1c-4442-9541-2f5631c62c8b&bsft_mid=26e3d009-e6f5-4ca1-947d-8d1aada6bc9b&bsft_txnid=2646b468-07d9-4d1a-a3fb-5a13ef8667f4
+
+Core Curriculum
+1. Introduction
+2. React Fundamentals
+	- modularity
+	- foundational parts of React ecosystem for production-ready apps
+	- project: MyReads, a book tracking app
+3. React & Redux
+	- state management
+	- make app's state bulletproof
+	- project: a Reddit clone called "Readable"
+4. React Native
+	- apps that run on both iOS and Android
+	- Authentication and the Facebook SDK
+	- Firebase and Firefox
+	- animations and styling
+	- how to submit to Google Play and App Store
+	- project: a "Polls" app for iOS and Android
+
+Extracurricular coursework
+1. ES6
+	- done!
+2. Asynchronous JavaScript
+	- not the same as the previous AJAX course I took
+	- Ajax with XHR, Ajax with jQuery, Ajax with fetch
+3. Git & Github
+4. Career Personalized Feedback
