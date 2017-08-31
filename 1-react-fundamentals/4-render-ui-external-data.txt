@@ -1,0 +1,117 @@
+/*
+ *	1. React Fundamentals
+ * 	Lesson 4: Render UI with External Data
+ */
+
+
+/* Lifecycle Events
+	- how to fetch and manage data living outside of components e.g. database?
+	- first intuition: do as Ajax inside render()
+		- WRONG! render needs to be free of side effects
+		- where should we make Ajax requests?
+
+	/!\ what NOT TO DO in render() /!\
+		- do NOT fetch data that's used to display content
+		- do NOT make any http requests
+		- do NOT alter the DOM
+
+	- Lifecycle events allow custom behavior at times in comonent's life
+		- events like when component inserted into DOM, when receives props, others...
+		- React has many different
+
+	- Most common lifecycle events
+		1) componentWillMount() 		: 	before component inserted into DOM
+		2) componentDidMount() 			:	after component inserted into DOM
+		3) componentWillUnmount()		: 	before component removed from DOM
+		4) componentWillReceiveProps() 	:  	when component about to receive brand new props
+
+	- Fetch data from db as perfect usecase for componentDidMount
+	1) render method is called
+	2) this.state variables have their initial values
+	3) component is mounted (meaning it is rendered)
+	4) immediately the componentDidMount() lifecycle event occurs
+		- data is fetched, sending a request to the database
+		- data is returned, updating your this.state values
+	5) noticing the state change, render() rerenders
+		- the changes will reflect the new this.state values
+
+ */
+
+// invoked once component added to view
+componentDidMount() {
+	fetchUser().then(user => this.setState({
+		name: user.name,
+		age: user.age
+	}))
+}
+
+/*
+	Now let's make Contacts app fetch real users from a server
+	- check you have the required ./src/utils/ContactsAPI file
+	- import ContactsAPI into App.js
+	- no more hardcoded contacts list within the App's .state!
+	- contacts will initialize as an empty array []
+	- add a lifecycle event to get the contacts via an API request
+ */
+import * as ContactsAPI from './utils/ContactsAPI.js'
+
+class App extends component {
+	state = {
+		contacts: [] 	// previously a hardcoded array of contact objects
+	}
+	// fetch data once component is mounted
+	componentDidMount() {
+		ContactsAPI.getAll().then((contacts) => { 	// see the JS file - it's a promise
+			this.setState({contacts}) 				// simplified syntax for {contacts: contacts}
+		})												// (sets this.state 'contacts' key to API return)
+	}
+	...
+
+/*
+	Remove contacts from db and local state
+	- that remove button we made earlier only removes from local state
+	- we also want to remove the contact from our API
+ */
+
+...
+	removeContact = (contact) => {
+		this.setState((state) => ({
+			contacts: state.contacts.filter((c) => c.id !== contact.id)
+		}))
+		ContactsAPI.remove(contact) 	// add to remove from db via the ContactsAPI.js method
+	}
+...
+
+/* Emphasis: what render() IS (above we did is NOT)
+	- a pure function that takes input via props
+	- a pure function that returns a description of your UI (JSX)
+	- a function over whose invocation you do not have control
+ */
+
+
+
+
+/* Takeaways
+	- lifecycle events are special methods that let you hook into diff points of component's life
+	- there are three categories
+	
+	(1) Adding to the DOM
+		- constructor()
+		- componentWillMount()
+		- render()
+		- componentDidMount()
+
+	(2) Re-rendering
+		- componentWillReceiveProps()
+		- shouldComponentUpdate()
+		- componentWillUpdate()
+		- render()
+		- componentDidUpdate()
+
+	(3) Removing from the DOM
+		- componentWillUnmount()
+
+	- Diagram of their relationships
+	https://d17h27t6h515a5.cloudfront.net/topher/2017/June/59519fa9_nd019-c1-l4-lifecycle-events/nd019-c1-l4-lifecycle-events.png
+
+ */

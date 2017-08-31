@@ -1,0 +1,156 @@
+/*
+ *	1. React Fundamentals
+ * 	Lesson 5: Managing App Location with React Router
+ */
+
+
+/* 1. Introduction
+	- using JS to render the UI is a "single page application"
+	- instead of browser requesting new pages from server,
+	- there's only single initial page sent from server
+	- React Router is a tool that lets us build such an app
+
+	Two ways to load
+	1) download the entire site contents at once
+		- everything is already available to the browser
+		- that way as user navigates can just show some already loaded content
+	2) download everything that's needed to render the requested page
+		- when user navigates to new page, Ajax for just that new content
+
+	- URL controls page content
+		- single-page apps are "highly interactive"
+		- URL allows users to navigate directly to a certain state
+		- important for Bookmarks, since they're not saving state
+	- Compare this to what you've done so far
+		- none of your changes have updated the URL!
+		- how do we make this site bookmarkable?
+
+	- React Router has specialized components for that!
+		- components that manage creation of links
+		- components that manage the app's URL
+		- components that provide transitions when navigating between URL locations
+		- components that do much much much more
+
+	"React Router is a collection of navigational components
+	that compose declaratively with your application"
+
+ */
+
+
+
+/* 2. Dynamically Render Pages
+	- right now I can't add a new contact to my app
+	- let's create a form
+	- should the form go... in App.js? ListContacts.js? In index.js?
+		- NO! React is composable, so we need a new UI component
+
+	Our new form
+	1) new file CreateContact.js
+	2) define your new component with a boring render()
+	3) export the component so it can be imported in App
+	4) import it in App and render to make sure it's working
+	5) mimic routing using this.state.screen inside App component
+		- the idea isn't to display all app screens at the same time
+		- it's to pick which screen we want to show
+		- instead of Router we'll think about this.state first
+		- use some state piece to decide screen to show
+	7) use this.state.screen to branch between 'list' and 'create' screens
+
+ */
+
+// build new form in CreateContact.js (steps 1-3 above)
+import React, { Component } from 'react'
+class CreateContact extends Component {
+	render() {
+		return (
+			<div>Create a new contact!</div>
+		)
+	}
+}
+export default CreateContact
+
+
+// import in App.js and add switching between screens
+import CreateContact from './CreateContact.js' 
+...
+	state = {
+		contact: [],
+		screen: 'list'		// little piece of state to switch btwn 'list' and 'create'
+	}
+	...
+	render() {
+		// note how our branches use "short-circuit evaluation" - expression && (statements)
+		return (
+			{this.state.screen === 'list' && (
+				<ListContacts ... />
+			)}
+			{this.state.screen === 'create' && (
+				<CreateContact />
+			)}
+		)
+	}
+...
+
+
+// add a button so user can make the transition instead of us manually changing this.state.screen
+// 	- do this in ListContacts.js
+...
+	return (
+		<div className='list-contacts'>
+			<div className='list-contacts-top'>
+				<input ... />
+				<a
+					href='#create'
+					onClick={() => {}}
+					className='add-contact'
+				>Add Contact</a>
+			</div>
+		</div>
+	)
+...
+
+
+// Wait, but ListContacts doesn't know about screen state! you need to pass onClick a function
+// 	- just like you did with onDeleteContent
+
+// so go back to App.js and pass a prop to ListContacts to be our click function for the button
+...
+	render() {
+		// define a func to pass to an onNavigate prop in ListContacts
+		// onNavigate will set this (the App component's) state.screen to 'create'
+		return (
+			{this.state.screen === 'list' && (
+				<ListContacts
+					contacts={this.state.contacts}
+					onDeleteContact={this.removeContact}
+					onNavigate={()=>{
+						this.setState({screen:'create'})
+					}}
+				/>
+			)}
+			{this.state.screen === 'create' && (
+				<CreateContact />
+			)}
+		)
+	}
+...
+// then in ListContacts.js change the onClick handler func to the passed-in one
+...
+	// onClick will now run the function that changes App component's state.screen to 'create'
+	return (
+		<div className='list-contacts'>
+			<div className='list-contacts-top'>
+				<input ... />
+				<a
+					href='#create'
+					onClick={this.props.onNavigate}
+					className='add-contact'
+				>Add Contact</a>
+			</div>
+		</div>
+	)
+...
+
+// Awesome:  you changed the screen and even changed the URL 	:-)
+// Terrible: hit the back button to see why your app is broken 	:-(
+//	- "That's why we built React Router" to keep the UI and the URL in sync

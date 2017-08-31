@@ -32,6 +32,11 @@ https://facebook.github.io/react/docs/typechecking-with-proptypes.html
 Regular Expressions for pattern matching:
 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
 
+Relationships between component lifecycle hooks:
+https://d17h27t6h515a5.cloudfront.net/topher/2017/June/59519fa9_nd019-c1-l4-lifecycle-events/nd019-c1-l4-lifecycle-events.png
+
+Tyler's React courses incl Router:
+https://tylermcginnis.com/courses/
 
 -------
 2 REDUX
