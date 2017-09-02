@@ -1,4 +1,4 @@
-/*
+/* 	1. React Fundamentals
  * 	Lesson 3: State Management
  */
 
@@ -39,7 +39,7 @@
  		
  		- you now run 2 servers locally
  			- front-end port 3000: 	npm start
- 			- back-end port 50001: 	node server.js
+ 			- back-end port 5001: 	node server.js
 
  */
 
@@ -68,9 +68,9 @@ import React, { Component } from 'react'
 class ListContacts extends Component {
 	render() {
 		return (
-			<ol className = 'contact-list'>
+			<ol className='contact-list'>
 				// map over passed-in prop
-				{this.props.contacts.map((contact) =>
+				{this.props.contacts.map((contact) => (
 					<li key={contact.id}>
 						{contact.name}
 					</li>
@@ -263,7 +263,7 @@ class App extends Component {
 		<ListContacts contacts={this.state.contacts} /> 	// pass it to the component
 	...
 }
-// Rule of thumb: if you use piece of state to render some UI, state should live in that component
+// Rule of thumb: if you use a piece of state to render some UI, state should live in that component
 	// we'll see this in action when we delete contacts
 
 /* NONONO! /!\ PROPS IN INITAL STATE ANTIPATTERN /!\
@@ -301,7 +301,7 @@ class App extends Component {
  // Pattern 1: you pass setState a function
  this.setState((prevState) => {
  	count: prevState.count + 1 		// when NEW state depends on PREV state!
- }))
+ })
 
 // Pattern 2: you pass setState an object
 this.setState({
@@ -342,7 +342,7 @@ this.setState({
 	...
 
 // Extra: consider that you can set states of objects independently
-// 	- imagine an Email component with state={subject:'',message:''}
+// 	- imagine an Email component with this.state = { subject: '', message: '' }
 // 	- below we just update the subject but leave the message blank
 this.setState({
 	subject: 'Hi!'
@@ -498,7 +498,7 @@ class ListContacts extends Component {
  	2) onChange event, an event listener invokes updateQuery, passing it target value
  	3) updateQuery calls setState() to change state to the target value
  	4) setState merges the new state to update the component's internal state
- 	4) the value of the input field is now the updated query state piece
+ 	5) the value of the input field is now the updated query state piece
 
 	Now add some filtering with the help of two packages!
 	- install escape-string-regexp

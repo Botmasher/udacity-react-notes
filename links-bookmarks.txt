@@ -38,6 +38,19 @@ https://d17h27t6h515a5.cloudfront.net/topher/2017/June/59519fa9_nd019-c1-l4-life
 Tyler's React courses incl Router:
 https://tylermcginnis.com/courses/
 
+React Router's BrowserRouter component uses history to let App respond to URL changes:
+https://github.com/reacttraining/history
+
+How to build your own router:
+https://tylermcginnis.com/build-your-own-react-router-v4/
+
+Easyish but helpful readings (course outro):
+https://medium.com/@dan_abramov/youre-missing-the-point-of-react-a20e34a51e1a
+https://tylermcginnis.com/react-aha-moments/
+https://camjackson.net/post/9-things-every-reactjs-beginner-should-know
+https://tylermcginnis.com/react-elements-vs-react-components/
+
+
 -------
 2 REDUX
 -------

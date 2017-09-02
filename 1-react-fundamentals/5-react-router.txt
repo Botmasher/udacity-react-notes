@@ -154,3 +154,355 @@ import CreateContact from './CreateContact.js'
 // Awesome:  you changed the screen and even changed the URL 	:-)
 // Terrible: hit the back button to see why your app is broken 	:-(
 //	- "That's why we built React Router" to keep the UI and the URL in sync
+
+
+
+
+
+/* 3. The Browser Router Component
+	- install it in the command line
+	- don't forget the -dom part since react router ships to other environments e.g. react-router-native
+
+	npm install --save react-router-dom
+
+	- Browser Router listens for changes in the URL
+	- when changes happen it ensures that the right screen shows
+	- you NEED TO wrap your whole app in a BrowserRouter component so App is aware of URL changes
+
+	- Now get router working in our contacts project
+		1) import BrowserRouter in index.js
+		2) wrap entire App in a BrowserRouter in index.js
+	- those steps will set up router to listen to and notify components on url change
+ */
+
+// index.js import BrowserRouter - step 1 above
+import { BrowserRouter } from 'react-router-dom'
+
+// index.js wrap App in BrowserRouter - step 2 above
+ReactDOM.render(
+	<BrowserRouter><App /></BrowserRouter>,
+	document.getElementById('root')
+)
+
+
+// consider for a moment that BrowserRouter is itself just a component!
+class BrowserRouter extends React.Component {
+  static propTypes = {
+    basename: PropTypes.string,
+    forceRefresh: PropTypes.bool,
+    getUserConfirmation: PropTypes.func,
+    keyLength: PropTypes.number,
+    children: PropTypes.node
+  }
+
+  history = createHistory(this.props)
+
+  render() {
+    return <Router history={this.history} children={this.props.children}  />
+  }
+}
+/* What is BrowserRouter doing?
+	- BrowserRouter really renders a Router component
+	- and passes it a history prop
+	- history comes from the history library (by React Training)
+		- history lib abstracts away diffs in various environments
+		- history lib provides minimal API
+			- API lets you manage history stack
+			- API lets you navigate
+			- API lets you confirm navigation
+			- API lets you persist state between sessions
+
+	- Nutshell:
+	"you're creating a history object which will listen to changes in the URL
+	and make sure your app is aware of those changes"
+ */
+
+
+
+
+
+/* 4. The Link Component
+	- how user navigates thru app (in browser)
+	- user clicks link <Link />
+	- link talks to router <BrowserRouter />
+	- link tells router to update the url (in browser)
+
+	<BrowserRouter> 	// changes URL in browser navigation bar
+		<div>
+			<Link/> 	// talks to parent BrowserRouter
+		</div>
+	</BrowserRouter>
+
+	- Not only is it declarative, it is highly accessible!
+		- navigating with a keyboard still works
+		- right clicking to open a new window still works
+		- other things you expect a web link to do work as expected
+ */
+
+// ListContacts.js - create a link
+...
+import { Link } from 'react-router-dom'
+...
+
+class ListContacts extends Component {
+	...
+	// within render()
+	// 1) edit the previous <a></a> to <Link></Link>
+	// 2) instead of href='' use the <Link> attribute (prop) to=''
+	// 3) in the to='' address make it a real URL instead of id#
+	// 4) React Router does the onClick work for us so remove the click  
+	<Link
+		to='/create'
+		//DELETE THIS: onClick={this.props.onNavigate}
+		className='add-contact'
+	>Add Contact</Link>
+	...
+}
+
+// structure for a basic link (string):
+<Link to='/about'>About page</Link>
+
+// structure of a complex link (object):
+	// e.g. with query parameters or linking to specfici parts of a page
+<Link to={{
+	pathname: '/courses',
+	search: '?sort=name',
+	hash: '#the-hash',
+	state: { fromDashboard: true }
+}}>Courses</Link>
+
+
+
+
+/* 5. The Route Component
+	- the final component we need
+	- takes a path and decides to render some UI
+	- only renders if the path matches the URL
+	- like branching we did with state but checks the URL instead of state
+		- this means the BACK BUTTON is going to work!
+
+	Give it props! Fill in Route's props:
+	- pass it a bare component={ComponentName} to display when path matches URL
+	- OR pass it a render={()=>{}} to render a component that needs specific props
+
+	<Route
+		path='/create'
+		render={ui}
+	/>
+ */
+
+// App.js - import the Route component
+import { Route } from 'react-router-dom'
+
+// add Routes to App
+class App extends Component {
+	...
+	// wrap the two screen branches (previously 2 states) in Routes
+	// - use render prop in first to show and pass stuff to listContacts
+	// - use component prop in second to display our component
+	<div className='app'>
+		<Route path='/' render={() => (
+			<ListContacts
+				contacts={this.state.contacts}
+				onDeleteContact={this.removeContact}
+				onNavigate={()=>this.setState({screen:'create'})}
+			/>
+		)}/>
+		<Route path='/create' component={CreateContact}/>
+	</div>
+}
+
+
+// BUT both Routes render to your app!
+// 	- they don't know or care about each other
+// 	- so both of them render!
+// 	- the '/' matches partially; let's make it EXACTLY
+	<div className='app'>
+		<Route exact path='/' render={() => (...)}/>
+		<Route path='/create' component={CreateContact}/>
+	</div>
+
+
+// Cleanup: remove the App state and references to it
+// 	- this includes the onNavigate prop for ListContacts
+//	- notice all that branching and navigate stuff is now gone
+// 	- thanks to Router we don't need a bunch of extra code in our app
+class App extends Component {
+	state = {
+		// REMOVE screen: 'link',
+		contacts: []
+	}
+	...
+	// REMOVE onNavigate=...
+
+
+// Quiz: which Route(s) would match to loaded URL /houses/red ?
+// 	1. <Route path='/houses' component={Houses} />
+// 	2. <Route exact path='/houses' component={Houses} />
+// 	3. <Route path='houses/red' component={Houses} />
+// 	4. <Route exact path='/houses/red' component={Houses} />
+// 	5. <Route path='/' component={Houses} />
+
+
+
+
+/* 6. Finishing the Contact Form
+
+	- let's start making changes to our CreateContact.js
+
+	1. ImageInput
+	- ImageInput is a custom <input> component
+	- it resizes images before saving them as data
+	- feel free to look at the code but it's not crucial to understand it
+
+	/!\ You now NEED ImageInput.js in your project if you don't already have it! /!\
+
+	2. Serialize the form data
+
+	npm install --save form-serialize
+
+	3. Update the server with a new contact
+
+ */
+
+// CreateContact.js - add ability to close this form
+class CreateContact extends Component {
+	render() {
+		return (
+			<div>
+				<Link className='close-create-contact' to='/'>Close</Link>
+			</div>
+		)
+	}
+}
+
+// Now let's add the form with an ImageInput field
+class CreateContact extends Component {
+	render() {
+		return (
+			<div>
+				<Link className='close-create-contact' to='/'>Close</Link>
+				<form classname='create-contact-form'>
+					<ImageInput
+						className='create-contact-avatar-input'
+						name='avatarURL'
+						maxHeight={64}
+					/>
+				</form>
+			</div>
+		)
+	}
+}
+
+// oh yeah, make sure you import the provided ImageInput component
+import ImageInput from './ImageInput'
+
+// add the form fields for name and email wrapped in a div, then a submit button
+class CreateContact extends Component {
+	render() {
+		return (
+			<div>
+				<Link className='close-create-contact' to='/'>Close</Link>
+				<form classname='create-contact-form'>
+					<ImageInput
+						className='create-contact-avatar-input'
+						name='avatarURL'
+						maxHeight={64}
+					/>
+					<div className='create-contact-details'>
+						<input type='text' name='name' placeholder='Name'/>
+						<input type='text' name='email' placeholder='Email'/>
+						<button>Add Contact</button>
+					</div>
+				</form>
+			</div>
+		)
+	}
+}
+
+
+// Try submitting the form. What happens? Name attributes serialized with values into URL
+// 	- we want to do this with JS, serializing form data and having app handle change to state
+// 	- Controlled Component time!
+class CreateContact extends Component {
+	// define a handler for controlled component
+	handleSubmit = (event) => {
+		event.preventDefault() 		// the browser will no longer submit the form for us
+	}
+
+	render() {
+		return (
+			<div>
+				<Link className='close-create-contact' to='/'>Close</Link>
+				// add an onSubmit handler func
+				<form onSubmit={this.handleSubmit} classname='create-contact-form'>
+				...
+
+
+// now we serialize the input ourselves using a library callled Form Serialize from npm
+import serializeForm from 'form-serialize'
+...
+	handleSubmit = (event) => {
+		event.preventDefault()
+		const values = serializeForm(event.target, {hash:true}) // serialize the actual form itself
+		console.log(values) 									// see what the object looks like
+	}
+...
+
+// we'd normally be done at this point and pass the values up to whoever's waiting for the data
+	handleSubmit = (event) => {
+		event.preventDefault()
+		const values = serializeForm(event.target, {hash:true})
+		console.log(values)
+		if (this.props.onCreateContact) { 		// make sure whoever ran this passed a prop
+			this.props.onCreateContact(values) 	// run the onCreateContact prop
+		}
+	}
+
+
+// App.js - switch from handing the component to Router to us in charge of rendering with props
+	render() {
+		return (
+			...
+				<Route path='/create' render={() => (
+					<CreateContact onCreateContact={this.createContact(contact)} />
+				)} />
+			</div>
+		)
+	}
+}
+
+// App.js - make our method for storing the created contact
+	createContact(contact) {
+		// this creates the db entry and sends us the contact from the server
+		ContactsAPI.create(contact).then((contact) => {
+			// we want to update our state to include the new contact
+			this.setState(state => ({
+				contacts: state.contacts.concat([ contact ]) 	// add contact to state.contacts 
+			}))
+		})
+	}
+
+// we want to be able to see that new contact listed
+	...
+		<Route path='/create' render={({history}) => (
+			<CreateContact onCreateContact={
+				this.createContact(contact) 	// create the contact
+				history.push('/') 				// go back to the list with new person in it
+			} />
+		)} />
+	...
+
+// With that, app is complete. "Strong work!"
+
+
+
+
+/* 7. Summary
+	Now you can:
+	- hit the back button
+	- hit the forward button
+	- refresh the page
+	- open links in a new tab
+	- share your URLs with friends
+ */
