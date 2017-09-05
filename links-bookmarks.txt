@@ -50,11 +50,22 @@ https://tylermcginnis.com/react-aha-moments/
 https://camjackson.net/post/9-things-every-reactjs-beginner-should-know
 https://tylermcginnis.com/react-elements-vs-react-components/
 
+MyReads code style guides:
+http://udacity.github.io/frontend-nanodegree-styleguide/
+|
+MyReads rubric:
+https://review.udacity.com/#!/rubrics/918/view
+
 
 -------
 2 REDUX
 -------
 
+- Three principles of Redux:
+http://redux.js.org/docs/introduction/ThreePrinciples.html#three-principles
+
+- Functional programming and pure functions:
+https://medium.com/javascript-scene/master-the-javascript-interview-what-is-functional-programming-7f218c68b3a0
 
 --------
 3 NATIVE

@@ -5,7 +5,7 @@
 
 
 /* 1. Introduction
-	- using JS to render the UI is a "single page application"
+	- using JS to render the UI in a "single page application"
 	- instead of browser requesting new pages from server,
 	- there's only single initial page sent from server
 	- React Router is a tool that lets us build such an app
@@ -134,6 +134,7 @@ import CreateContact from './CreateContact.js'
 		)
 	}
 ...
+
 // then in ListContacts.js change the onClick handler func to the passed-in one
 ...
 	// onClick will now run the function that changes App component's state.screen to 'create'

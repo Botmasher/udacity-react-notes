@@ -1,0 +1,255 @@
+/*
+ *	2. Redux
+ * 	Lesson 1: Why Redux?
+ */
+
+/* 1. What's Redux?
+	
+	- a powerful tool for managing state inside of app
+	- Redux API makes state more predictable
+
+	This time:
+	1) When to use it? Quick overview.
+	2) What are the benefits of using it with React? Focus.
+
+	Course map:
+	1. benefits of Redux
+	2. core entities: actions, reducers, ...
+	3. connect React and Redux: react-redux bindings
+	4. fundamental patterns: reducer composition, normalization, ...
+	5. Middleware and other enhancements to React Redux apps
+
+	In-class project: Udacimeals walkthrough
+
+ */
+
+
+/* 2. Why does Redux exist?
+	- state mismanagement leads to bugs
+	- less state mismanagement implies less bugs
+
+	1) Shared State
+	- React already rocks at state management
+	- usu we're hoisting state up to parent component
+	- but what if parent lives 4 components up the tree?
+		- you'd have to pass down data as props 4 layers deep
+
+	2) Caching
+	- easier to cache API calls or expensive operations
+	- so easier way to make better user experience
+
+	- Shared State
+		- when two components need access to same piece of state
+		- Redux controls when, why how of state so this is easier
+
+	- Redux Store
+		- the store is the "single source of truth"
+		- store is app's global state in a single object state tree
+		- to make it work: state is read-only/immutable
+		- to make it work: components express intent to update state
+		- to make it work: pure functions, reducers, can change state
+
+	- Simple use case: redo/undo feature, much easier thanks to above
+
+	- More complex back-end cases:
+		- forms that a user fills out
+		- server responses
+		- cached data like users
+		- local data not yet persisted to server
+	- Add to those the complexities of UI:
+		- keeping track of active routes
+		- knowing which tabs are currently selected
+		- controlling pagination
+
+	- Redux is modeled on Flux, which takes cues from Elm
+
+	T/F QUIZ
+	1) All React apps require Redux
+	2) Redux can be used with other view libraries
+	3) Redux implements a single state tree, making debugging straightforward
+	4) Views and network callbacks write directly to Redux state
+	5) Redux state is maintained within multiple stores
+
+ */
+
+
+
+
+/* 3. Predictability
+ 	- Consider React's unidirectional model of parent-to-child data flow
+ 	- data must flow through all nested intermediate components
+ 		- data owned by topmost component is actually displayed by bottom-most one!
+ 	- instead components can access data from store directly
+
+ 	- Store has following characteristics:
+ 		- unidirectional
+ 		- all/most of app's data
+ 		- strict rules on updating
+ */
+
+
+
+
+/* 4. Redux Stores vs Component State
+	- what's "most" of the state?
+	- debate: how much component state and .setState should be used?
+	- DON'T force Redux to manage ALL of app's state
+	- store vs. component:
+		- use React for short-lived, non-complex-mutating state, e.g. a selected tab
+		- use Redux for state that matters globally or mutates in complex ways, e.g. email drafts
+
+	QUIZ: Component or Store?
+	1) global app state
+	2) localized view state
+	3) form input state
+	4) toggle in UI element
+	5) a single state tree
+
+ */
+
+
+
+
+/* 5. Pure Functions
+	- restrictions imposed on how state updates can happen
+	- only pure functions update Redux app state
+	- what's a "pure function"? Predictable ones. Characteristics:
+		1) return a single, same result when same args passed in
+		2) depend ONLY on args passed into them (never db or DOM or app state)
+		3) NEVER produce any side-effects
+			- no outside interaction
+			- this means NO network requests and NO state mutation
+ */
+// simple example of a pure function
+const sq = x => x*x;
+// simple impure function
+const tipPercent = 0.15;
+const calculateTip = (cost) => cost*tipPercent;
+// converting impure to pure
+const calcTip = (cost, tipPercent=0.15) => cost*tipPercent;
+
+/*
+	- another way to put the three characteristics:
+	1. always return the same result given the same arguments
+	2. never depend on the state of the application (variables outside of scope)
+	3. never modify variables outside of their scope
+	
+	- this includes modifying an array directly, a common result of array functions
+		- like .splice or looping over an array and modifying its values
+
+	- Things that count as SIDE EFFECTS: any outside interactions
+		- making HTTP calls
+		- mutating external state
+		- retrieving today's date
+		- Math.random()
+		- printing messages to the console
+		- CRUD a database
+*/
+
+// T or F: this is a pure function
+const double = array => {
+	let doubledArray = [];
+	array.forEach(n=> doubledArray.push(n*2));
+	return doubledArray;
+};
+
+/*
+  - Pure functions and composition
+  	- these tie in well with composition
+  	- they're modular, so easy to test
+  	- testability gives well-defined points of control in your app
+  	- code maintenance is simpler
+  	- not everything should be pure: event handler updating DOM is good example
+ */
+
+
+
+
+/* 6. Array's .reduce() Method
+	- what is .reduce()?
+		- a "higher-order function", taking a callback as its arg
+		- large amounts of data reduced to a single value
+
+	- terminology and structure
+		- the callback function has an accumulator, currentValue, startingValue
+			- accumulator is the aggregate total from each call
+			- currentValue is the current item in the array as iterate through
+		- (accumulator, currentValue) pass through as args
+		- startingValue is initialized in the second argument
+
+	- Let's break it down below
+ */
+
+// basic structure of reduce, with callback and starting value
+array.reduce(<function>,0);
+
+// adding the arguments of the reducer callback
+array.reduce((accumulator, currentValue)=>{}, 0);
+
+// adding the body of the reducer function
+array.reduce((accumulator, currentValue) => {
+	return accumulator + currentValue.property; 	// data from current object's key
+}, 0);
+
+
+// apply to an example - total a property in an array of objects
+const iceCreamStats = [
+  {
+    name: 'Amanda',
+    gallonsEaten: 3.8
+  },
+  {
+    name: 'Geoff',
+    gallonsEaten: 5.2
+  },
+  {
+    name: 'Tyler',
+    gallonsEaten: 1.9
+  },
+  {
+    name: 'Richard',
+    gallonsEaten: 7923
+  }
+];
+const totalGallons = iceCreamStats.reduce((accumulator, currentValue) => {
+	return accumulator + currentValue.gallonsEaten;
+}, 0);
+
+
+// combine .filter() and .reduce()
+	// - tally only gallons eaten by people with brief names
+const shortNameTotalGallons = iceCreamStats.filter((obj) => {
+	return obj.name.length <= 5; 	// remember to RETURN the iterated data
+}).reduce((accumulator, obj) => {
+	return accumulator + obj.gallonsEaten;
+}, 0);
+
+
+// bond arrays within an object and calculate based on that array
+	// - like subtotal the most popular ice creams
+const data = [
+	{ name: 'Tyler', favoriteIceCreams: ['Strawberry', 'Vanilla', 'Chocolate', 'Cookies & Cream'] },
+	{ name: 'Richard', favoriteIceCreams: ['Cookies & Cream', 'Mint Chocolate Chip', 'Chocolate', 'Vanilla'] },
+	{ name: 'Amanda', favoriteIceCreams: ['Chocolate', 'Rocky Road', 'Pistachio', 'Banana'] },
+	{ name: 'Andrew', favoriteIceCreams: ['Vanilla', 'Chocolate', 'Mint Chocolate Chip'] },
+	{ name: 'David', favoriteIceCreams: ['Vanilla', 'French Vanilla', 'Vanilla Bean', 'Strawberry'] },
+	{ name: 'Karl', favoriteIceCreams: ['Strawberry', 'Chocolate', 'Mint Chocolate Chip'] }
+];
+
+// first reduce the favoriteIceCreams arrays to a single array
+const allFavoriteIceCreams = data.reduce((previousArray, current) => {
+	return [...previous, ...current.favoriteIceCreams];  // spread all prev + curr values into an array
+}, []); 		// initialize an empty array
+
+// then pull out totals into an object for each item
+const iceCreamSubtotals = allFavoriteIceCreams.reduce((iceCreamSums, iceCream) => {
+	// add 1 to each icecream's subtotal to build up subtotal name:value pairs)
+	iceCreamSums[iceCream] = iceCream in iceCreamSums ? iceCreamSums[iceCream]+1 : 1;
+	return iceCreamSums;
+}, {}); 		// start with an empty object
+
+
+
+/* 7. Summary
+ * 	Awesome work! Now let's learn the details of Redux (actions, reducers, store)!
+ */
