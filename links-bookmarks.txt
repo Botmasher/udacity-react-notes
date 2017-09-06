@@ -61,11 +61,18 @@ https://review.udacity.com/#!/rubrics/918/view
 2 REDUX
 -------
 
-- Three principles of Redux:
+Three principles of Redux:
 http://redux.js.org/docs/introduction/ThreePrinciples.html#three-principles
 
-- Functional programming and pure functions:
+Functional programming and pure functions:
 https://medium.com/javascript-scene/master-the-javascript-interview-what-is-functional-programming-7f218c68b3a0
+
+Diagram of Redux flow from view to action to reducer to store back to view:
+https://d17h27t6h515a5.cloudfront.net/topher/2017/August/598112b7_nd019-c2-reduxflowgraphic-diagram/nd019-c2-reduxflowgraphic-diagram.png
+
+Redux dev tools (see lesson 2.4 for second arg to pass to Redux.createStore to make it work):
+https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd
+
 
 --------
 3 NATIVE

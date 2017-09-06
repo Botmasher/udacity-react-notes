@@ -1,0 +1,514 @@
+/*
+ * 	2. Redux
+ * 	Lesson 2: Redux at its Core
+ */
+
+
+
+/* 1. Introduction - major players in Redux
+
+	- Interconnected and hard to separate
+	- this makes it challenging to learn
+	- it'll take work to put the pieces together
+	1) Actions: these are dispatched by the store
+	2) Reducers: the reducer uses actions
+	3) The Store: to create it you need a reducer
+
+	- The Store as "central element"
+		- houses the application state
+		- gets its state using a reducer
+		- to change it has to dispatch an action
+		- this action is passed to the reducer
+		- and the reducer updates the store's state
+
+	- The flow of data:
+		1) View dispatches action to Action Creator
+		2) Action Creator returns object describing change to Reducer
+			- think: "actions are payloads of information"
+			- actions tell reducers which event types occurred in the app
+		3) Reducer returns new state based on action to store
+			- think: "reducers specify the shape of and update the store"
+		4) Store passes updated state to View
+			- this triggers rerender like a setState
+
+ */
+
+
+
+
+/* 2. Create Actions
+ 	- similar to native events (click, dblclick, ...)
+ 	- the browser allows you to set those up
+
+ 	- Redux allows eventy things, too... they're called Actions
+ 	- Actions are payloads of info
+ 		- just plain old JavaScript objects
+ 		- they can describe any state-updating event in the app
+ 		- the described events should mean to update the app's state
+ 		- action's type describes what took place
+ */
+
+// example of an action to edit a specific user
+{
+	type: 'EDIT_USER', 			// action must have type in ALL CAPS
+	id: 719						// the specific user to edit
+}
+
+// storing actions in a variable for use
+const LOAD_PROFILE = 'LOAD_PROFILE';
+const myAction = {
+	type: LOAD_PROFILE
+	// any other data can be passed along as properties
+	// (the "payload" is optional but the type is not!)
+};
+
+/*
+	Action Recommendations
+ 	- prefer constants over strings in the action's type
+ 		- allows for easier debugging of misspellings
+ 	- keep payloads small and send ONLY necessary data for the action
+
+	Making Actions Portable
+	- to use and test them let's wrap in a func
+	- these funcs are "Action Creators"
+	- it's a function that creates and returns an action
+
+ */
+
+// example action creator
+const submitUser = user => ({
+	type: SUBMIT_USER,
+	user
+}); 	// whenever need a {type:SUBMIT_USER,user:user} can now make one!
+
+/* Udacimeals
+	- let's begin building the project
+	- customizable calendar with breakfast, lunch, dinner through the week
+	- we'll leverage Edamam's Recipe Search API ( developer.edamam.com )
+	- then we'll generate a shopping list based on the meals you choose
+
+	1) install create-react-app
+	2) run create-react-app to create Udacimeals
+	3) create dirs: 	src/actions, src/components, src/utils
+	4) move files: 		App.js to src/components & resolve any import dirs
+	5) create files: 	src/utils/api.js, src/utils/helper.js
+ 
+ 	In Udacimeals we can do two actions:
+ 	- add a new recipe
+ 	- remove a food item from the calendar
+
+ 	So create a new file and let's add some actions:
+ 	src/actions/index.js
+
+ */
+
+// index.js - add some action type constants instead of string comparisons
+export const ADD_RECIPE = 'ADD_RECIPE';
+export const REMOVE_FROM_CALENDAR = 'REMOVE_FROM_CALENDAR';
+
+// below that add an action creator for adding a recipe
+export function addRecipe ({ day, recipe, meal }) {
+	return {
+		type: ADD_RECIPE,
+		recipe,
+		day,
+		meal
+	}
+}
+
+// and an action creator for removing meal from calendar
+export function removeFromCalendar ({ day, meal }) {
+	return {
+		type: REMOVE_FROM_CALENDAR,
+		day,
+		meal
+	}
+}
+
+// remember: these DO NOT modify state
+	// they only specify some event that occurred that SHOULD modify it
+// How does Redux know that when we invoke an action creator it should modify store?
+// How do we tell Redux how the state should change based on these actions?
+
+
+
+
+/* 3. Create Reducers
+	- creates the initial state of the application which is stored in the store
+	- a reducer is just a function
+	- it's passed the CURRENT STATE and the ACTION THAT WAS JUST DISPATCHED
+	- it does not modify the state but creates a new one based on that state
+	- it must return either the new state or the previous state
+
+	- NEVER modify the existing data
+	- instead, modify a copy and return the updated copy
+
+	- Put differently, versus actions:
+		- an action describe that an event occurred
+		- but an action doesn't concern itself with how the state should change
+		- a reducer takes current state, an incoming action, and decides how
+ */
+
+// basic reducer
+function app (state, action) {
+	if (action.type == 'ADD_FLAVOR') {
+		// modify a copy and return it
+		return {
+			...state, 									// keep all state's properties
+			flavors: [...state.flavors, action.flavor] 	// but add a flavor to flavors
+		};
+		// DO THAT instead of modifying directly like this!
+		// state[flavors].push(action.flavor);
+	}
+	// you will return the "current state"
+	return state;
+}
+
+// actions don't decide how to change state; reducers do
+function reducer (state, action) {
+	// switch or if/else decisions about which action creator was invoked
+	switch (action.type) {
+		// check if submitUser() action creator was invoked
+		case 'SUBMIT_USER':
+			return Object.assign({}, state, { 	// create new state based on current
+				user: action.user 				// update user in that new state with
+			});										// value passed from submitUser(user)
+	}
+}
+
+/*
+	Rules:
+	1) Your reducer MUST be a pure function.
+	2) Your reducer MUST be a pure function.
+	3) Your reducer MUST be a pure function.
+
+	/!\ This includes calling other impure functions in the body of the reducer /!\
+	/!\ This includes unpredictable effects like random, Date.now() and async calls /!\
+ */
+
+
+// QUIZ TIME: what's wrong with this reducer?
+function reducer(state = {}, action) {
+    switch(action.type){
+        case "ADD_ITEM":
+            return action.item;
+        case "EMPTY_CART":
+            return {};
+        case "UPDATE_ITEMS":
+            state.items = action.items;
+            return state;
+        default:
+            return state;
+    }
+}
+/*
+	- default state is not returned
+	- switch statement checks the incorrect expression
+	- switch statement is incorrectly formatted
+	- it mutates previous state
+	- it doesn't account for all action types
+ */
+
+
+// Quiz: create appReducer, a reducer that:
+	// - takes state array of info about icecreams (objects with flavors and counts)
+	// - takes an object with a DELETE_FLAVOR type key and a flavor to delete
+	// - returns a new state that does not include the deleted flavor
+const appReducer = (state, action) => {
+	switch (action.type) {
+		case 'DELETE_FLAVOR':
+			return state.filter(icecream => icecream.flavor!=action.flavor);
+		default: 	// makes sure the action payload is optional
+			return state;
+	}
+};
+
+// test for the above reducer
+const result = appReducer(
+	[
+		{flavor: 'Chocolate', count: 40},
+		{flavor: 'Vanilla', count: 270}
+	],
+	{type: 'DELETE_FLAVOR', flavor: 'Vanilla'}
+);
+console.log(result);
+
+
+/* 
+	Ok, reducers return state. But how should the data actually be shaped?
+	- as an array of objects?
+	- or a single object that contains everything inside it?
+	- EITHER, depending on your app!
+
+	So, about writing reducers for your app:
+	- Make this decision EARLY based on how app uses data
+	- don't build reducers until you know this about your app 
+
+	And interaction with actions:
+	- each branch of the reducer decides how to change state
+	- and should do this tailored to the type of action that was dispatched
+
+	Back to our Udacimeals app
+	1) create src/reducers
+	2) create an index.js inside of that new folder
+	3) import both of the constants we made in our actions
+	4) create an initialCalendarState object
+	5) write your reducer function to add recipe or remove from calendar
+	6) export your reducer
+
+ */
+
+// index.js inside of /src/reducers - import action types
+import {
+	ADD_RECIPE,
+	REMOVE_FROM_CALENDAR
+} from '../actions';
+
+// index.js - create initial state test data at the top
+const initialCalendarState = {
+	sunday: {
+		breakfast: null,
+		lunch: null,
+		dinner: null,
+	},
+	// and so on for the whole week...
+}
+
+// index.js - write the reducer function
+function calendar (state=initialCalendarState, action) {
+	// can grab properties using destructuring
+	// const {day,recipe,meal} = action
+
+	switch (action.type) {
+		case ADD_RECIPE:
+			return {
+				...state,
+				[action.day]: {
+					...state[action.day],			// all other meals stay the same
+					[action.meal]: recipe.label, 	// except this name of a recipe
+				}
+			}
+		case REMOVE_FROM_CALENDAR:
+			return {
+				// keep all objects
+				...state,
+				// but modify the one for this day
+				[action.day]: {
+					...state[action.day], 	// all meals on this day stay the same
+					[action.meal]: null 	// except for this specific meal
+				}
+			}
+		default:
+			return state;
+	}
+}
+
+// export the reducer so we can import it inside of a different file
+export default calendar;
+
+
+/*
+	How to decide if React or Redux should manage a piece of state?
+	- debated, but here's this instructor's heuristic:
+		- if two components rely on it, it's probably for the Redux store
+		- if the caching story for that data looks expensive, store!
+			- this means the operation could take a while
+			- that way you don't have to re-fetch every time component mounts
+	- most other scenarios work fine with local component state
+ */
+
+
+
+
+/* 4. Create a Redux Store
+	- the store runs the show
+	- holds state of the app
+	- it works like this:
+		1) dispatches actions
+		2) calls reducers when an action was dispatched
+		3) receives and stores the new state
+ */
+
+// use createStore() to create a new store
+const newStore = Redux.createStore(<reducer>);
+
+// a store has a few methods
+newStore.getState(); 						// return current state in the store
+newStore.dispatch(<action object>); 		// pass action obj to reducer func
+newStore.subscribe(<listener function>); 	// store func to call whenever state changes
+
+
+// a simple example of creating and using a store
+import { createStore } from 'redux';
+import reducer from '../reducers/reducer'; 	// imagine we've written the reducer
+
+let store = createStore(reducer);
+
+const receiveComment = comment => ({ 		// an action
+	type: 'RECEIVE_COMMENT',
+	comment
+});
+
+export default store;
+
+// using the properties of our store
+store.getStore(); 	// returns []
+store.dispatch(receiveComment('Hello World!'));
+store.getStore(); 	// returns ['Hello World!']
+
+
+/*
+	Now return to the app and create a store for Udacimeals!
+	1) Install redux
+		npm install redux
+	2) src/index.js inside of dev server import createStore and reducer
+	3) create your store and pass it the reducer you've created
+	4) recommended: add Redux dev tools
+		- pass store a second argument for the devtools extension
+
+ */
+
+// import createStore and reducer in src/index.js
+import { createStore } from 'redux';
+import reducer from './reducers';
+
+// create your store in src/index.js
+const store = createStore(reducer);
+
+// log out the store to see its available properties
+console.log(store);
+
+// log out the state of the store to see our calendar data object
+console.log(store.getState());
+
+// add devtools
+const store = createStore (
+	reducer,
+	window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+);
+
+/*
+	Quiz:
+	getState() 	A: returns the previous state of the store
+				B: returns the current state of the store
+	dispatch()	A: sends an action (describing a change) to the store's reducer
+				B: tells the reducer to send an action (describing a change)
+	subscribe() A: registers a cb to dispatch an action when state is modified
+				B: registers cbs to be executed whenever store updates
+
+	btw, subscribe is useful for connecting components to the store
+ */
+
+
+
+
+/* 5. Put It Together
+	
+	Back into your Udacimeals app:
+
+	1) Pass store to App as prop in index.js <App/>
+
+	2) Add some basic code to App.js render()
+		- make sure it has a breakfast input field and submitFood button
+	https://github.com/udacity/reactnd-udacimeals-complete/blob/d0d4b8ade3dea46b7a3250ea196e0f862a399672/src/components/App.js
+
+	3) add a state for the calendar
+
+	4) grab store from props and subscribe to store when component mounts
+		- subscribe to update local state whenever store updates
+
+	5) import your action creators
+		- look at the addRecipe again to recall the properties it takes
+
+	6) define the button click submitFood function
+		- it should use the addRecipe action creator
+
+	7) test it out - run, submit input and look at Redux tools for change in state
+
+ */
+
+// index.js - pass store to App
+ReactDOM.render(<App store={store}/>, document.getElementById('root'));
+
+// App.js - basic component code
+class App extends Component {
+	render() {
+		return (
+			<div>
+				<input
+					type='text'
+					ref={input => this.input=input} 	// not value={()=>{}} ???
+					placeholder="Monday's Breakfast"
+				/>
+				<button onclick={this.submitFood}>Submit</button>
+				<pre>
+					Monday Breakfast: {this.state.calendar && this.state.calendar.monday.breakfast}
+				</pre>
+			</div>
+		)
+	}
+}
+
+// add a state, grab store from props and subscribe to the store
+class App extends Component {
+	state = {
+		calendar: null
+	};
+	componentDidMount() {
+		this.props.store.subscribe(() => { 	// update component state when store changes
+			this.setState(() => {			// triggers rerender of stuff down in render()
+				calendar: this.props.store.getState()				
+			});
+		});
+	}
+	...
+
+// import the action creators and define submitFood to dispatch an ADD_RECIPE action
+import { addRecipe, removeFromCalendar } from '../actions'
+...
+	submitFood = () => {
+		this.props.store.dispatch(addRecipe({
+			day: 'monday',
+			meal: 'breakfast',
+			recipe: {
+				label: this.input.value
+			}
+		}));
+		this.input.value = '';	 // reset the input value to empty
+	}
+	render() {
+		...
+
+// test it out - run app and poke around Redux dev tools (the State and the Diff)
+
+/*
+	Take note of the full-circle process:
+	1) We are subscribing to our store
+	2) Whenever that changes we update our local state
+	3) Whenever our submitFood method runs we dispatch an action
+	4) That action goes to the reducer and updates the store
+
+	Problem: lots of steps just to get a simple app running!
+		- test and see there's not much you can do in this app
+	Solution: React-Redux library
+		- this library is normally used when using Redux in React
+		- "it's basically bindings that make a lot of these things a lot easier"
+ */
+
+/* What is "ref"?
+	- attribute provided by React
+	- it allows us direct access the DOM API
+	- we used it above to deal with the input in the text field
+	- only works with class components not functional ones
+ */
+// sample use cases for a ref:
+// https://facebook.github.io/react/docs/refs-and-the-dom.html
+
+/* Quiz: Imagine a create users app. Put these operations in order.
+	- store.dispatch(addUser)
+	- list displays new user
+	- create a reducer that sets user array to []
+	- result = store.getState()
+	- call createStore(reducer)
+ */
+
