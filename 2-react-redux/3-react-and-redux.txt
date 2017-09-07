@@ -1,0 +1,108 @@
+/* 3. Redux
+ * Lesson 3: React and Redux
+ */
+
+
+/* 1. Introduction
+	- everything so far (see especially lesson 2) as framework agnostic
+	- dispatch(), getState(), subscribe() worked fine for small app
+	- but we need the right abstraction to make this work
+
+	Benefits of react-redux
+	- made by Redux devs
+	- easy to dispatch actions and access store from within components
+	- use the Provider component and connect() method
+		- connect() specifies which components receive which data
+
+ */
+
+
+
+
+/* 2. Provider
+	
+	- Provider avoids "prop threading" (passing down data thru props, from last time)
+	- Provider wraps the entire app so subcomponents receive store data directly
+
+	1) install Provider so can use it:	npm install --save react-redux
+	2) remove vanilla redux complexity from App.js; just a <div>Hello world</div>
+	3) remove the action creator import from App.js
+	4) open src/index.js and think about store being passed to App
+		- what if a lot of components need store?
+		- like if they're getting data or doing lots of dispatching of actions
+		- we'd have to pass store around to all those components!
+	5) import Provider into src/index.js
+	6) solve #4 by wrapping <App /> inside of a <Provider></Provider>
+		- this will handle passing store around your components
+		- later we'll discuss how components use it to dispatch actions
+	7) pass the store into that Provider's props
+
+ */
+
+// index.js - import provider
+import { Provider } from 'react-redux';
+...
+	<Provider store={store}><App /></Provider>, ...
+
+/*
+	What's react-redux Provider's magic?
+	- it leverages React's 'context' API
+	- look that up to see them warn you it's experimental
+		- you should just use Redux instead, haha
+	- .connect() passes data through component tree automatically
+		- no more manually passing props
+	- it sets the store context, then provides store context to all subcomponents
+		- it does not provide API endpoints to the store
+		- it does not provide action creators to the store
+ */
+
+
+
+
+/* 3. Currying
+ 	- .connect() relies on currying
+ 	- also called "partial application"
+ 	- a function that takes only partial information and returns a function
+ 	- it basically delays doing all the work of the function
+ */
+
+// my example
+function sum (a) {
+	return function totalSum (b) {
+		return (a+b);
+	};
+}
+
+// do all of the work at once without delaying
+sum(1)(2); 	// returns 3
+
+// do some of the work but store the closure so info can be used later
+const addOne = sum(1);
+// later that day...
+addOne(2); 	// returns 3
+
+/* Double invocation? Say what?!?
+	- take a moment and break it down: sum returns a <Function>
+	- you can invoke that returned func (passing any required args)
+	- or you can store it for later
+	- this can of course lead to nested closures invoked by concatenated parens sets
+ */
+function doThisNow() {
+	console.log('Wait for it...');
+	return function thenThis() {
+		console.log('...wwwwait for iiiiiit...');
+		return function andFinallyThat() {
+			console.log('BLAMMZ!');
+		};
+	};
+}
+let andAgain = doThisNow();
+andAgain = andAgain();
+andAgain = andAgain();
+
+/* Quiz: write a housebuilder function
+	- it outputs the number of stories and the color of a house
+	- it returns a function
+	- returned closure can pass around the number of stories before the color is chosen
+ */
+

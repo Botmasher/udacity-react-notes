@@ -511,4 +511,3 @@ import { addRecipe, removeFromCalendar } from '../actions'
 	- result = store.getState()
 	- call createStore(reducer)
  */
-

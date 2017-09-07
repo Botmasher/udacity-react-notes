@@ -73,6 +73,9 @@ https://d17h27t6h515a5.cloudfront.net/topher/2017/August/598112b7_nd019-c2-redux
 Redux dev tools (see lesson 2.4 for second arg to pass to Redux.createStore to make it work):
 https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd
 
+Currying (to prepare for how react-redux Provider's .connect() method works):
+http://kevvv.in/currying-in-javascript/
+
 
 --------
 3 NATIVE
