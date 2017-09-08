@@ -17,7 +17,7 @@
 	- The Store as "central element"
 		- houses the application state
 		- gets its state using a reducer
-		- to change it has to dispatch an action
+		- to change it component has to dispatch an action
 		- this action is passed to the reducer
 		- and the reducer updates the store's state
 
@@ -76,9 +76,10 @@ const myAction = {
  */
 
 // example action creator
+const SUBMIT_USER = 'SUBMIT_USER';
 const submitUser = user => ({
 	type: SUBMIT_USER,
-	user
+	user: user
 }); 	// whenever need a {type:SUBMIT_USER,user:user} can now make one!
 
 /* Udacimeals
@@ -269,7 +270,7 @@ const initialCalendarState = {
 	sunday: {
 		breakfast: null,
 		lunch: null,
-		dinner: null,
+		dinner: null
 	},
 	// and so on for the whole week...
 }
@@ -440,7 +441,7 @@ class App extends Component {
 					ref={input => this.input=input} 	// not value={()=>{}} ???
 					placeholder="Monday's Breakfast"
 				/>
-				<button onclick={this.submitFood}>Submit</button>
+				<button onClick={this.submitFood}>Submit</button>
 				<pre>
 					Monday Breakfast: {this.state.calendar && this.state.calendar.monday.breakfast}
 				</pre>

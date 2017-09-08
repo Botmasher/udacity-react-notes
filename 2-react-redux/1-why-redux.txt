@@ -149,7 +149,7 @@ const calcTip = (cost, tipPercent=0.15) => cost*tipPercent;
 // T or F: this is a pure function
 const double = array => {
 	let doubledArray = [];
-	array.forEach(n=> doubledArray.push(n*2));
+	array.forEach(n => doubledArray.push(n*2));
 	return doubledArray;
 };
 

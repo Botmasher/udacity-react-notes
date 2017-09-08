@@ -106,3 +106,114 @@ andAgain = andAgain();
 	- returned closure can pass around the number of stories before the color is chosen
  */
 
+
+
+
+/* 4. Connect
+	- import connect from the react-redux package
+	- makes it possible to map both store state and store dispatch to a component
+	- its signature is interesting:
+		
+		connect(mapStateToProps, mapDispatchToProps)(MyComponent)
+		
+		- MyComponent is the component to receive store state, or store dispatch, or both
+		- mapStateToProps() is a function you define that:
+			- subscribes to store updates
+			- is called anytime store updates (given the above)
+			- receives current store (and, optionally, your own current props)
+			- you must use store (and props) to return a plain object
+			- that object will be merged into the component's props
+		- mapDispatchToProps() is a function you define that:
+			- allows wrapping action creators inside of dispatch
+
+	mapStateToProps() can be thought of as a func that lets connect() know how
+	to map store state onto usable props!
+
+	mapDispatchToProps() can be thought of as a func that lets you bind dispatch()
+	to your action creators before they ever hit your component
+	It sounds like both of these funcs are optional.
+ */
+
+// map state to props if you pass it to connect (in documentation: "if this argument is specified")
+mapStateToProps(state, [ownProps]) { /*...*/ }
+
+// example of in-app use
+import { connect } from 'react-redux';
+
+const User = ({ name, age }) => {
+	// ... whatever the User functional component renders
+};
+
+const mapStateToProps = (state, props) => ({
+	name: state.user.name,
+	age: state.user.age
+});
+
+export default connect(mapStateToProps)(User); 	// now store name and age are passed as props to User
+
+
+// ownProps as optional argument - convenient way to access props being passed to the component
+	// - great case: when filtering some data based on User
+// imagine this example is in a MyPhotos component:
+const mapStateToProps = (state, ownProps) => ({
+	// so wherever we write this we can still access MyPhoto's .user props
+	photos: state.photos.filter(photo => photo.user === ownProps.user)
+});
+export default connect(mapStateToProps)(MyPhotos);
+
+
+/*
+	Now let's apply this to our App!
+	1) go to App.js and import connect from react-redux
+	2) App.js also export default connect()(App)
+	3) log your component's this.props to see that you're now able to call dispatch
+	4) now connect your component to your store to get the data in the store
+	5) 
+ */
+
+// App.js - set up connect
+import { connect } from 'react-redux';
+...
+export default connect()(App);
+
+// now check out what your App's props are!
+	...
+	render() {
+		console.log(this.props); 	// you'll see the dispatch function!
+		return (
+			...
+		)
+	}
+	...
+
+// connect component to the store - write mapStateToProps() OUTSIDE class scope
+function mapStateToProps(calendar) {	// we're calling our store state 'calendar'
+	return {
+		name: 'Beacon'				// console.log(this.props) in App now shows we have a .name
+	}
+}
+export default connect()(App);
+
+/*
+	NOW let's prepare for our calendar GRID!
+	- it's kind of the nature of React with Redux that you want data stored in objects
+	- it's also the nature of layouts that we want array-like structures, not JSON-like ones
+	- so we'll do the grinding thing of converting everything in our calendar store to array
+ */
+function mapStateToProps(calendar) {
+	// days of the week for us to map over as we build our array
+	const dayOrder = ['sunday','monday','tuesday','wednesday','thursday','friday'];
+	// recall the structure of our calendar object in the store to understand this buildup
+	return {
+		calendar: dayOrder.map((day) => ({ 		// console.log(this.props) to see nice formatted array
+			day,
+			meals: Object.keys(calendar[day]).reduce((meals, meal) => {
+				meals[meal] = calendar[day][meal]
+					? calendar[day][meal]
+					: null
+				return meals
+			}, {})
+		});
+	}
+}
+export default connect()(App);
