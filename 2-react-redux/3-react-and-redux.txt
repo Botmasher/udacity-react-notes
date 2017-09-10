@@ -162,6 +162,10 @@ const mapStateToProps = (state, ownProps) => ({
 export default connect(mapStateToProps)(MyPhotos);
 
 
+
+
+// ---- HAVEN'T IMPLEMENTED BELOW HERE ----
+
 /*
 	Now let's apply this to our App!
 	1) go to App.js and import connect from react-redux
@@ -217,3 +221,66 @@ function mapStateToProps(calendar) {
 	}
 }
 export default connect()(App);
+
+
+/* 
+	mapDispatchToProps()
+		- a connect()ed component will automatically be passed Redux dispatch() method
+		- can use standard .dispatch() through the props passed in (this.props.dispatch)
+			- as you recall, this involved passing it the action creator
+			- like dothing = () => { this.props.dispatch(actionCreator({})) }
+		- OR can clean up a bit with mapDispatchToProps()
+			- binds dispatch to your action creators before they hit your component
+			- is COMPLETELY optional, "not convinced it makes things that much cleaner"
+			- it adds methods to the component's props
+			- when these funcs are called, automatically dispatch the action
+ */
+
+// example of dispatching in a component
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { updateName } from './actions';
+
+class User extends Component {
+	state = { name: '' }
+	handleUpdateUser = () => {
+		this.props.boundUpdateName(this.state.name);
+	}
+	render() {
+		/* ... */
+	}
+}
+
+export default connect()(User);
+
+
+// instead use mapDispatchToProps to bind dispatch() to action creators before they hit component
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { updateName } from './actions';
+
+class User extends Component {
+	/* ... */
+}
+
+function mapDispatchToProps = dispatch => ({ 		// add a react-redux mapDispatchToProps
+	boundUpdateName: (name) => dispatch(updateName(name))
+});
+
+export default connect(null, mapDispatchToProps)(User); 	// pass into the component's connect
+
+
+// App.js - apply it to your App component
+import { addRecipe, removeFromCalendar } from '../actions'; 	// import your action creators
+	// could go on to use dispatch exactly like what we did with vanilla Redux
+
+// OR we could mapDispatchToProps
+function mapDispatchToProps(dispatch) {
+	return {		// what we return will be passed as props
+		selectRecipe: (data) => dispatch(addRecipe(data)),
+		remove: (data) => dispatch(removeFromCalendar(data))
+	};
+}
+export default connect(mapStateToProps, mapDispatchToProps)(App);
+	// - now instead of using this.props.dispatch, can do this.props.selectRecipe({})
+	// - look at your props in the Redux tools to see component now has these cleaner props
