@@ -1,0 +1,169 @@
+/*
+	2. Redux
+	Lesson 4: Architect a Redux Store
+ */
+
+
+
+
+/* 1. Introduction
+	- so far our stores are limited to one reducer
+	- this works fine for many small apps
+	- let's build towards complex applications
+	- let's also make sure we keep the data sane and maintainable
+ */
+
+
+
+
+/* 2. combineReducers
+	- consider a hypothetical book reducer
+		1) a book action is dispatched
+		2) the book reducer is called
+		3) the reducer returns the book state
+	- but what if we extended it to deal with user actions?
+		- one option is to modify the book reducer to handle user actions
+		- more ideal is to add a reducer to handle user actions
+	
+	- Wait, Redux createStore() only takes a single reducer!
+		- create a root reducer one lvl up that calls both user and book reducers
+ */
+
+// hypothetical added "users" reducer
+function users (state={}, action) {
+	switch (action.type) {
+		case 'ADD_USER':
+			return {};
+		case 'REMOVE_USER':
+			return {};
+		default:
+			return state;
+	}
+}
+
+// now the hypothetical two reducers
+function users (state={}, action) { ... }
+function books (state={}, action) { ... }
+
+/*
+	"Reducer Composition"
+	- we separated those two out
+	- "to handle distinct, independent slices of state"
+	- but again Redux.createStore() only accepts ONE reducer
+ 
+ 	Back to our Udacimeals app - when we get API response, where do we save recipe in our store?
+ 	- we could grab the whole recipe object and stick it in the meal
+ 	- but what if we wanted the same dinner monday and tuesday? DUPES!
+ 	- Redux: do NOT duplicate data
+ 	1) make a brand new .food property beside the .calendar property on our state object
+ 	2) go inside reducers/index.js and make a brand new reducer
+ 		- this will be a food() reducer
+ */
+
+// new reducers index.js food() reducer
+function food(state={}, action) {
+	switch (action.type) {
+		case ADD_RECIPE:
+			const { recipe } = action;
+			return {
+				...state,
+				[recipe.label]: recipe
+			};
+		default:
+			return state;
+	}
+}
+	// now the ADD_RECIPE action dispatch modifies both calendar and food
+	// but take a look at your exports - it's the calendar reducer
+
+// make sure in the base app's index.js you're importing reducer from '.reducers/'
+
+/*
+	combineReducers()
+	- as app grows we often want to have nested objects
+	- we want to practice "reducer composition"
+		- using multiple reducers
+		- with each reducer "responsible for separate, independent portions of state"
+		- so below each reducer will be responsible only for, say, users or comments
+		{
+			users: {},
+			comments: {},
+			replies: {}
+		}
+	- the action->reducer pattern still holds in scale
+		- each reducer gets section of state
+		- each reducer gets an action
+		- each reducer returns a new, unmodified section of that same state
+
+	To accomplish what we've been teasing at we:
+	1) create separate reducers (like the food vs calendar reducers)
+	2) use the Redux combineReducers() method
+		- turns an object with multiple reducer functions into a single reducer function
+		- we pass this one root reducer into createStore()
+		- main reducer calls every child reducer and gathers results
+		- gathered results are a new single unified state object
+ */
+
+// example of writing a /reducers/root_reducer.js
+import { combineReducers } from 'redux';
+
+function users(state={}, action) { ... }
+function books(state={}, action) { ... }
+
+export default combineReducers({users, books,});
+
+
+// example importing and setting up the store in /store/store.js
+import rootReducer from '../reducers/root_reducer'
+
+const store = createStore(rootReducer);
+console.log(store.getState()); 			// logs  { users: {}, books: {} }
+
+
+// Now bring it into Udacimeals
+// back in /reducers/index.js
+import { combineReducers } from 'redux';
+...
+export default combineReducers({food,calendar});
+	// check the Redux console to see that you have a food property in the state store
+	// you're exporting the COMBINED VALUE of combineReducers here
+
+// within App.js - mapStateToProps is receiving BOTH calendar AND food now
+//  - conceptually, calendar now stores an id for a food (like calendar:{monday:{breakfast:'pizza'}} )
+//  - and all of the food's information can be found under food[id]
+//  - so update App state to reflect that we're storing food items not just food names 
+function mapStateToProps({calendar, food}) {
+	calendar: dayOrder.map((day) => {
+		day,
+		meals: Object.keys(calendar[day]).reduce((meals, meal) => {
+			meals[meal] = calendar[day][meal]
+			? food[calendar[day][meal]] 		// make sure we're getting the actual food item
+			: null
+		})
+	})
+}
+
+/*	After you update your Udacimeals, answer T or F:
+	- an alternative to combineReducers() is to pass multiple reducers to createStore()
+	- you import combineReducers() from react-redux
+	- combineReducers() takes one object as its argument
+	- combineReducers() returns one reducer that can be passed in to create the store
+
+
+	And this quiz: what's wrong with the following root reducer?
+
+	import { combineReducers } from 'redux';
+	import booksReducer from './books_reducer';
+	import userReducer from './user_reducer';
+
+	const rootReducer = combineReducers(booksReducer, userReducer);
+
+	export default rootReducer;
+
+ */
+
+
+
+
+/* 3. Normalization
+ */

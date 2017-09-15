@@ -1,4 +1,4 @@
-/* 3. Redux
+/* 2. Redux
  * Lesson 3: React and Redux
  */
 
@@ -284,3 +284,8 @@ function mapDispatchToProps(dispatch) {
 export default connect(mapStateToProps, mapDispatchToProps)(App);
 	// - now instead of using this.props.dispatch, can do this.props.selectRecipe({})
 	// - look at your props in the Redux tools to see component now has these cleaner props
+
+/*
+ 	/!\ I see the props BUT the text no longer updates. /!\ 
+ 	The instructor does not test app in video but our App.js connect code matches. Onward!
+ */
