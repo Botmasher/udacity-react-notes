@@ -55,6 +55,10 @@ http://udacity.github.io/frontend-nanodegree-styleguide/
 |
 MyReads rubric:
 https://review.udacity.com/#!/rubrics/918/view
+|
+MyReads API, put vs post, as well as other HTTP Request methods:
+https://stackoverflow.com/questions/630453/put-vs-post-in-rest
+https://www.w3schools.com/tags/ref_httpmethods.asp
 
 
 -------
@@ -75,6 +79,13 @@ https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfk
 
 Currying (to prepare for how react-redux Provider's .connect() method works):
 http://kevvv.in/currying-in-javascript/
+
+What Redux says about keeping store normalized:
+http://redux.js.org/docs/recipes/reducers/NormalizingStateShape.html
+|
+Normalizr for keeping store free of duplicate data and as shallow as possible:
+https://github.com/paularmstrong/normalizr
+
 
 
 --------

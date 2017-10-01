@@ -51,7 +51,7 @@ function books (state={}, action) { ... }
 	- "to handle distinct, independent slices of state"
 	- but again Redux.createStore() only accepts ONE reducer
  
- 	Back to our Udacimeals app - when we get API response, where do we save recipe in our store?
+ 	Back to Udacimeals - when we get API response, where to save recipe in our store?
  	- we could grab the whole recipe object and stick it in the meal
  	- but what if we wanted the same dinner monday and tuesday? DUPES!
  	- Redux: do NOT duplicate data
@@ -129,9 +129,10 @@ export default combineReducers({food,calendar});
 	// you're exporting the COMBINED VALUE of combineReducers here
 
 // within App.js - mapStateToProps is receiving BOTH calendar AND food now
-//  - conceptually, calendar now stores an id for a food (like calendar:{monday:{breakfast:'pizza'}} )
+//  - conceptually, calendar now stores food (like calendar:{monday:{breakfast:'pizza'}} )
 //  - and all of the food's information can be found under food[id]
 //  - so update App state to reflect that we're storing food items not just food names 
+// 	- we're now getting calendar as well as food as an object from reducers, so decompose
 function mapStateToProps({calendar, food}) {
 	calendar: dayOrder.map((day) => {
 		day,
@@ -166,4 +167,78 @@ function mapStateToProps({calendar, food}) {
 
 
 /* 3. Normalization
+ 	- we've seen encapsulation of pieces of state into indiv reducers
+ 	- now focus on architecting store to be (1) easy to reason about and (2) more performant
+ 	- this process is "normalization of state shape"
+ 		- a few choices to follow
+ 		- objective of making sure app runs smoothly
+
+ 	Rules
+ 	1) Do not duplicate data
+ 		- violates Single Source of Truth 
+ 		- wastes resources syncing data
+ 	2) Keep store as shallow as possible
+ 		- deeply nested data updates get complex quickly
+
+	Redux recommends:
+	1) as normalized as possible, without any nesting
+	2) every entity is in an object with ID as a key
+	3) use ID to reference entity from other entities or from lists
  */
+
+// example of properly referencing info for a list of friends
+const people = {
+	kassim: {
+		name: 'Kassim K',
+		age: 24,
+		favoriteIceCream: 'vanilla'
+	},
+	tyler: {
+		name: 'Tyler T',
+		age: 25,
+		favoriteIceCream: 'chocolate'
+	},
+	amy: {
+		name: 'Amy A',
+		age: 26,
+		favoriteIceCream: 'strawberry'
+	}
+};
+const friends=['amy','kassim'];
+const friendsInfo = friends.map(friend => people[friend]);
+
+// example of crazy nested structure not to use
+const books = {
+	fiction: {
+		fantasy: {
+			0: {
+				title: 'Harry Potter and the Nested Data',
+				author: 'JK Rowling'
+      		}
+    	},
+    	romance: {},
+    	scifi: {}
+  	},
+  	nonFiction: {}
+};
+// imagine the reducer you need for the monster above!!
+function books (state, action) {
+ 	const { bookType, genre, id, title } = action;
+  	if (action.type = CHANGE_TITLE) {
+    	return {
+      		...state,
+      		[bookType]: {
+        		...state[bookType],
+        		[genre]: {
+        			...state[bookType][genre]: {
+            			[id]: {
+              				...state[bookType][genre][id],
+              				title,
+            			}
+          			}
+        		}
+      		}
+    	};
+  	}
+  	return state;
+};

@@ -4,11 +4,12 @@
 
 
 
+
 /* 1. Introduction
 
 	- props: pass data into components
 	- functional components: more intuitive way to create them
-	- control components: hook up forms to component state
+	- controlled components: hook up forms to component state
 
 	- take a look at a simple app, use it and imagine what components go into making it
 

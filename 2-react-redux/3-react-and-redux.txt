@@ -161,11 +161,6 @@ const mapStateToProps = (state, ownProps) => ({
 });
 export default connect(mapStateToProps)(MyPhotos);
 
-
-
-
-// ---- HAVEN'T IMPLEMENTED BELOW HERE ----
-
 /*
 	Now let's apply this to our App!
 	1) go to App.js and import connect from react-redux
@@ -217,7 +212,7 @@ function mapStateToProps(calendar) {
 					: null
 				return meals
 			}, {})
-		});
+		})
 	}
 }
 export default connect()(App);
