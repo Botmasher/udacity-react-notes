@@ -242,3 +242,266 @@ function books (state, action) {
   	}
   	return state;
 };
+
+// To reiterate: "Normalization" means removing dupes and keeping data as shallow as possible.
+
+
+
+
+/* 4. Finish the App!
+	- use what we know about react-redux to build display grid for the meals calendar
+ */
+
+// first let's npm install react-icons
+
+// then a couple imports
+import { capitalize } from '../utils/helpers';
+import CalendarIcon from 'react-icons/lib/fa/calendar-plus-o';
+
+// now grab the mapped calendar and remove from props
+...
+	render () {
+		const {calendar, remove} = this.props;
+		const mealOrder = ['breakfast', 'lunch', 'dinner']; 	// also create our meals array
+		return (); 
+	}
+}
+
+// start creating the UI to render
+// loop through meal types and create a horiz column for each meal
+...
+	render () {
+		const {calendar, remove} = this.props;
+		const mealOrder = ['breakfast', 'lunch', 'dinner'];
+		return (
+			<div className="container">
+				<ul className="meal-types">
+					{mealOrder.map(mealType => (
+						<li key={mealType} className="subheader">{capitalize(mealType)}</li>
+					))}
+				</ul>
+			</div>
+		...
+
+// now build out that grid
+	...
+		return (
+			<div className="container">
+				<ul className="meal-types">
+					{mealOrder.map(mealType => (
+						<li key={mealType} className="subheader">{capitalize(mealType)}</li>
+					))}
+				</ul>
+				<div className="calendar">
+					{/* create row header for each day */}
+					<div className="days">
+						{calendar.map(({ day }) => <h3 key={day} className="subheader">{capitalize(day)}</h3>)}
+					</div>
+					{/* map over calendar again to create list of meals for each day */}
+					<div className="icon-grid">
+						{calendar.map(({ day, meals }) => (
+							<ul key={day}>
+								{mealOrder.map((meal) =>
+									<li key={meal} className='meal'>
+										{meals[meal]
+											?	<div className="food-item">
+													<img src={meals[meal].image} alt={meals[meal].label} />
+													<button onClick={() => remove({meal, day})}>Clear</button>
+												</div>
+											: 	<button className="icon-btn">
+													<CalendarIcon size={30} />
+												</button>
+										}
+									</li>
+								)}
+							</ul>
+						)}
+					</div>
+				</div>
+			</div>
+		);
+	}
+}
+
+
+/*
+ 	- Import the new index.css and you will see a grid
+ 	https://github.com/udacity/reactnd-udacimeals-complete/blob/master/src/index.css
+ 
+ 	- Get a unique key and ID for the Edamam recipes API
+	- put your key and ID in an .env file in the root directory of your project
+		REACT_APP_API_ID=YOUR-API-ID
+		REACT_APP_APP_KEY=YOUR-APP-KEY
+
+	- Now let's build a Modal with an input field!
+		- when you click on a calendar icon
+		- a modal with input field pops up
+		- use the input to fetch that food or fetch that recipe from the API
+		- then save food/recipe to our redux store
+	1) install a spinner for loading
+	2) install react modal as well
+		npm install react-loading react-modal
+	3) restart your dev server
+	4) start importing
+		import Modal from 'react-modal';
+		import ArrowRightIcon from 'react-icons/lib/fa/arrow-circle-right';
+		import Loading from 'react-loading';
+		import { fetchRecipes } from '../utils/api';
+		import FoodList from './FoodList';
+	5) set up your app's local state for the modal 
+ */
+
+// number 5, setting up the state
+state = {
+	foodModalOpen: false,
+	meal: null,
+	day: null,
+	food: null,
+	loadingFood: false
+}
+
+// 6) now you need methods for toggling the modal and for fetching recipes from the API
+openFoodModal = ({ meal, day }) => {
+	this.setState(() => ({
+		foodModalOpen: true,
+		meal,
+		day
+	}));
+};
+closeFoodModal = () => ({
+	this.setState(() => ({
+		foodModalOpen: false,
+		meal: null,
+		day: null,
+		food: null
+	}));
+});
+searchFood = (e) => {
+	if (!this.input.value) {
+		return;
+	}
+	e.preventDefault();
+	this.setState(() => ({loadingFood : true}));
+	fetchRecipes(this.input.value)
+	.then((food) => this.setState(() => ({
+		food,
+		loadingFood: false
+	})));
+};
+// above: we HAVEN'T stored food yet
+// since we get back an array of food
+// what we'll do is save it to local state, then submit it to redux when we pick an actual food
+
+// 7) now in render method grab some of that state by destructuring AND selectRecipe additionally from props
+render() {
+	const { foodModalOpen, loadingFood, food } = this.state;
+	const { calendar, remove, selectRecipe } = this.props;
+}
+
+// 8) when unassigned meal calendar button is clicked, open a modal
+	// conceptually keep in mind where these are coming from in the maps
+	<button onClick={() => this.openFoodModal({meal, day})} className="icon-btn">
+		<CalendarIcon size={30} />
+	</button>
+
+/// 9) now some copy-paste code to render modal
+	<Modal
+      className='modal'
+      overlayClassName='overlay'
+      isOpen={foodModalOpen}
+      onRequestClose={this.closeFoodModal}
+      contentLabel='Modal'
+    >
+      <div>
+        {loadingFood === true
+          ? <Loading delay={200} type='spin' color='#222' className='loading' />
+          : <div className='search-container'>
+              <h3 className='subheader'>
+                Find a meal for {capitalize(this.state.day)} {this.state.meal}.
+              </h3>
+              <div className='search'>
+                <input
+                  className='food-input'
+                  type='text'
+                  placeholder='Search Foods'
+                  ref={(input) => this.input = input}
+                />
+                <button
+                  className='icon-btn'
+                  onClick={this.searchFood}>
+                    <ArrowRightIcon size={30}/>
+                </button>
+              </div>
+              {food !== null && (
+                <FoodList
+                  food={food}
+                  onSelect={(recipe) => {
+                    selectRecipe({ recipe, day: this.state.day, meal: this.state.meal })
+                    this.closeFoodModal()
+                  }}
+                />)}
+            </div>}
+      </div>
+    </Modal>
+
+    <Modal
+      className='modal'
+      overlayClassName='overlay'
+      isOpen={ingredientsModalOpen}
+      onRequestClose={this.closeIngredientsModal}
+      contentLabel='Modal'
+    >
+      {ingredientsModalOpen && <ShoppingList list={this.generateShoppingList()}/>}
+    </Modal>
+
+/// 10) Make sure you have the FoodList and ShoppingList components
+// https://github.com/udacity/reactnd-udacimeals-complete/blob/823876c8e3b669c0338f630fa50120adb7168f6f/src/components/FoodList.js
+// https://github.com/udacity/reactnd-udacimeals-complete/blob/0e343838ef120c458f3b3b4a5de74dbc167be4d6/src/components/ShoppingList.js
+
+
+// 11) now let's make sure inside the modal are all of the food ingredients for the week
+import ShoppingList from './ShoppingList';
+...
+state = {
+	...
+	ingredientsModalOpen: false 	// added for ingredients modal
+}
+
+// 12) now some open/close ingredients modal methods and especially the ability to generate our shopping list
+openIngredientsModal = () => this.setState(() => ({ ingredientsModalOpen: true }));
+closeIngredientsModal = () => this.setState(() => ({ ingredientsModalOpen: false }));
+generateShoppingList = () => {
+	// get all meals and push them into a single array
+	return this.props.calendar.reduce((result, { meals }) => {
+		const { breakfast, lunch, dinner } = meals;
+		breakfast && result.push(breakfast);
+		lunch && result.push(lunch);
+		dinner && result.push(dinner);
+		return result;
+	}, [])
+	.reduce((ings, { ingredientLines }) => ings.concat(ingredientLines), []); 	// flatten the array
+};
+	// now you'll get array of all the different ingredients inside those meals
+
+// 13) also destructure the open ingredients modal state to have easy access to it
+const { foodModalOpen, loadingFood, food, ingredientsModalOpen } = this.state;
+
+// 14) add the header with a way to open that modal
+<div className="container">
+	<div className="nav">
+		<h1 className="header">Udacimeals</h1>
+		<button
+			className="shopping-list"
+			onClick={this.openIngredientsModal}
+		>
+			Shopping List
+		</button>
+	</div>
+...
+
+/// 15) make sure you have that ingredients modal already set up
+
+
+/*
+	That's it for now. Time to move onto Middleware for adding new features to our store.
+ */
