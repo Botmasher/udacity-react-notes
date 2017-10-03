@@ -1,0 +1,67 @@
+/*
+	2. Redux
+	5. Redux Middleware
+ */
+
+
+/* 1 -2. What is middleware?
+	- code that intercepts a request or a process
+	- redirecting it or producing side-effect
+	- in Redux it's between dispatching of action and reducer
+	"third-party extension point between dispatching an action, and the moment it reaches the reducer"
+
+	- It receives an action and then can do many things e.g.
+		- side effects like logging state
+		- processing action on its own (like HTTP async request)
+		- redirecting the action (like to some other middleware)
+		- running code during dispatch
+		- dispatching a supplementary action
+
+	- Notice this is all within the same pattern of state mgmt that Redux follows
+ */
+
+
+
+
+/* 2. Implementing middleware
+	
+	- createStore() can take in a second arg, an "enhancer"
+		store.createStore(reducer, [preloadedState], [enhancer])
+	- using the redux applyMiddleware() enhancer, we can add multiple middleware
+	
+	Logger middleware
+	- recall that we're thinking of Redux as a "predictable state container" for the app
+	- so why not see store's state before and after a reducer processes the action?
+	- you could use redux-logger package, but let's make some middleware
+
+ */
+
+// first import applyMiddleware() from redux
+import { createStore, applyMiddleware, compose } from 'redux';
+
+// set up a logger
+const logger = store => next => action => {
+	console.group(action.type);
+	console.info('dispatching', action);
+	let result = next(action);
+	console.log('next state', store.getState());
+	console.groupEnd(action.type);
+	return result;
+};
+
+// apply logger as middleware
+const store = createStore(
+	reducer, 
+	applyMiddleware(logger)
+);
+
+// but wait, we wanted to use our devtools extension too!
+// this is a common theme with redux, we need to compose these together
+// so let's do a compose function
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+const store = createStore (
+	reducer,
+	composeEnhancers(applyMiddleware(logger))
+);
+

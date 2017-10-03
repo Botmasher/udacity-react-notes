@@ -106,6 +106,9 @@ https://github.com/paularmstrong/normalizr
 React Icons:
 https://github.com/gorangajic/react-icons
 
+Creating custom middleware:
+https://medium.com/@jihdeh/creating-custom-middleware-in-react-redux-961570459ecb
+
 
 --------
 3 NATIVE
