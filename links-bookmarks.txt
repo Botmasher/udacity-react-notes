@@ -1,5 +1,6 @@
 -------
 1 REACT
+project: Contacts
 -------
 
 Composition - example implementing string capitalization:
@@ -60,9 +61,25 @@ MyReads API, put vs post, as well as other HTTP Request methods:
 https://stackoverflow.com/questions/630453/put-vs-post-in-rest
 https://www.w3schools.com/tags/ref_httpmethods.asp
 
+Final Project: MyReads
+----------------------
+Feedback:
+- Don't include something in state unless the component changes it
+- Things derivable from state (like ostensibly shelves from books) should not be duplicated separately in state
+- Init component state in the constructor: https://reactjs.org/docs/react-component.html#constructor
+- Use Switch for exclusive routing to a 404 error page
+- Index as key for looped siblings is a last resort: https://medium.com/@robinpokorny/index-as-a-key-is-an-anti-pattern-e0349aece318
+	- for me this manifested as books that, once removed from a shelf, would leave their menu state on filled-in item's dropdown
+- Good idea on placeholder images but try ones with custom text
+- Great job on stateless component but the more the better
+- Good job on README.md and TODO.md!
+- Use Debounce (like react-throttle) to make sure query input isn't hitting the API before user is done typing
+- Good job using ComponentDidMount() correctly
+
 
 -------
 2 REDUX
+project: Udacimeals
 -------
 
 Three principles of Redux:
@@ -86,6 +103,8 @@ http://redux.js.org/docs/recipes/reducers/NormalizingStateShape.html
 Normalizr for keeping store free of duplicate data and as shallow as possible:
 https://github.com/paularmstrong/normalizr
 
+React Icons:
+https://github.com/gorangajic/react-icons
 
 
 --------
