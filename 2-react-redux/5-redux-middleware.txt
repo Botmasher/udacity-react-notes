@@ -4,7 +4,7 @@
  */
 
 
-/* 1 -2. What is middleware?
+/* 1-2. What is middleware?
 	- code that intercepts a request or a process
 	- redirecting it or producing side-effect
 	- in Redux it's between dispatching of action and reducer
@@ -23,7 +23,7 @@
 
 
 
-/* 2. Implementing middleware
+/* 3. Implementing middleware
 	
 	- createStore() can take in a second arg, an "enhancer"
 		store.createStore(reducer, [preloadedState], [enhancer])
@@ -65,3 +65,98 @@ const store = createStore (
 	composeEnhancers(applyMiddleware(logger))
 );
 
+
+
+
+/* 4. Thunks
+ 	- one of most common uses of middleware: SYNCHRONICITY
+ 	- without this, redux store only supports synchronous flow of data (see the schema throughout course)
+ 	- so what if we want app to interact with server?
+ 		1) make request
+ 		2) request is resolved
+ 		3) and only THEN do we dispatch an action
+ 	
+ 	- redux-thunk package gives us "thunks"
+ 	- these allow us to write different action creators
+ 	- these action creators return a function rather than an object
+ 	- middleware can intercept these function actions before triggering a dispatch
+
+ 	How to think about thunk:
+ 	- It's a wrapper around the store's dispatch() method
+ 	- It provides "Thunk action creators" that return a function
+ 	- Instead of returning objects, we can use those action creators to dispatch a func or Promise
+
+	Async without Thunks:
+	- we COULD still do async using React
+	- like we could use componentDidMount()
+	- but thinking in Redux we want two things:
+		(1) Reusability: again, this is composition
+		(2) Predictability: action creators are the source of state updates, so lifecycle events shouldn't also be!
+
+	Installation:
+		npm install --save redux-thunk
+ */
+
+// example of using thunk middleware to async HTTP request to fetch a logged-in user's to-do list from a db
+// store.js
+import { createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
+import rootReducer from '../reducers/root_reducer';
+
+	// instance of thunk passed to redux enhancer func
+const store = () => createStore(rootReducer, applyMiddleware(thunk));
+
+export default store;
+
+
+// imagine the HTTP req looks like this
+// util/todos_api_util.js
+export const fetchTodos = () => fetch('api/todos');
+
+// now our function-returning action creator can look like this
+// actions/todo_actions.js
+import * as TodoAPIUtil from '../util/todos_api_util';
+
+export const RECEIVE_TODOS = "RECEIVE_TODOS";
+
+export const receiveTodos = todos => ({ 	// action creator returning an action object
+	type: RECEIVE_TODOS,
+	todos
+});
+
+export const fetchTodos = () => dispatch => ( 	// set up Promise and dispatch todo action ONLY when req resolves
+	TodoAPIUtil.fetchTodos()
+	.then(todos => dispatch(receiveTodos(todos)))
+);
+
+/*
+	Why can't I do this without thunk?
+ 	- try writing fetchTodos() without redux-thunk; you can only return an object!
+ 	- reducers only take in a plain JS object after all
+
+ 	What is thunk doing under the hood?
+ 	- see a snippet of the source code below!
+ */
+
+function createThunkMiddleware(extraArgument) {
+	return ({ dispatch, getState }) => next => action => {
+		if (typeof action === 'function') { 	// intercept actions of type function before dispatch generated
+			return action(dispatch, getSate, extraArgument); 	// getState allows reading current state of store
+		}
+		
+		return next(action);
+	};
+}
+
+const thunk = createThunkMiddleware();
+thunk.withExtraArgument = createThunkMiddleware;
+
+export default thunk;
+
+// So start using this Redux technique to delay an action, including when you need to make an API request!
+
+
+
+/* 5. 
+
+ */

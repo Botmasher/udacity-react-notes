@@ -109,6 +109,15 @@ https://github.com/gorangajic/react-icons
 Creating custom middleware:
 https://medium.com/@jihdeh/creating-custom-middleware-in-react-redux-961570459ecb
 
+Redux Thunk middleware:
+https://github.com/gaearon/redux-thunk
+|
+Redux only supports synchronous strict unidirectional data flow, so use middleware:
+http://redux.js.org/docs/advanced/AsyncFlow.html
+|
+Writing async action creators and using Thunk middleware (a thoughtful answer):
+https://stackoverflow.com/questions/35411423/how-to-dispatch-a-redux-action-with-a-timeout/35415559#35415559
+
 
 --------
 3 NATIVE
