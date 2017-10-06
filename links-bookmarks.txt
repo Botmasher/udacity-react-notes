@@ -118,6 +118,15 @@ http://redux.js.org/docs/advanced/AsyncFlow.html
 Writing async action creators and using Thunk middleware (a thoughtful answer):
 https://stackoverflow.com/questions/35411423/how-to-dispatch-a-redux-action-with-a-timeout/35415559#35415559
 
+Ways to organize files and folders (from lesson By Capability vs By Feature):
+https://github.com/reactjs/redux/issues/2378
+|
+What is Hot Reloading? What is Time Travel?
+https://code-cartoons.com/hot-reloading-and-time-travel-debugging-what-are-they-3c8ed2812f35
+
+Awesome Redux examples and middleware:
+https://github.com/xgrommx/awesome-redux
+
 
 --------
 3 NATIVE

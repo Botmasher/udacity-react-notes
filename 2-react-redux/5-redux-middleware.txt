@@ -157,6 +157,66 @@ export default thunk;
 
 
 
-/* 5. 
+/* 5. App Structure & Organization
+	- make it easier to find files
+	- make it easier to move files around ("modularity")
 
+	1. By Capability
+	- Strategy: know where to look for certain types of assets
+	- Example: the real-world example from Redux is structured this way
+	- Pro: Easy to know where each asset type belongs and is found
+	- Con: What if a component's requirements change? Have to find and change related actions, reducers, etc. 
+
+		Frontend
+		- Components
+			- component1.js
+			- component2.js
+			- component3.js
+		- Actions
+			- action1.js
+			- action2.js
+		- Reducers
+			- reducer1.js
+	    - Util
+	    - Store
+
+	2. By Feature
+	- Strategy: group assets by the concept they share
+	- Example: 
+	- Pro: visually express what your application is about
+	- Con: if you have hundreds of components it's difficult to navigate
+
+		- nav
+			- actions.js
+			- index.js
+			- reducer.js
+		- dashboard
+			- actions.js
+			- index.js
+			- reducer.js
+
+	- The choice is yours! Consider features, scale and dependencies in your app:
+		1) What are your features?
+		2) What is the app's scale? Many features? A few really complex ones?
+		3) What are your dependencies?
+ */
+
+
+
+
+/* OUTRO
+ 	- think about how you'd use middleware
+ 	- think about directory structure
+
+ 	- me extra: Hot Reloading
+ 		- good for dev to save your state while testing and reloading
+ 		- so you don't have to make code change and come get to same point in app
+ 	- me extra: Time Travel Debugging
+ 		- go back to previous points in state
+ 		- like in a todo list, add the previous item again
+ 		- or imagine a QA tester who found a bug just packaging up the action and state history!
+ 	https://code-cartoons.com/hot-reloading-and-time-travel-debugging-what-are-they-3c8ed2812f35
+
+ 	- In the outro it seems this middleware section was added to how we architected our store
+ 		- me: makes sense given where we introduce middleware enhancers, both in theoretical flow and in the code
  */
