@@ -1,0 +1,30 @@
+/* 	
+ *	React Native
+ * 	1. Up and Running with React Native
+ */
+
+/* 1. Introduction
+		- most of what you know about React applies
+		- start with the benefits and dev environment
+		- compare the main ideological diffs and API diffs
+		- styling and layout patterns for React Native
+		- routing patterns and strategies
+		- native functionality like geolocation and notifications, plus publishing
+
+		- Along the way, create a fitness tracker called UdaciFitness
+ */
+
+
+/* 2. What is it and why
+ 		- use React to build mobile app, letting orgs have single UI team
+ 		- "write once, run anywhere" is difficult in practice, but React Native: "learn once, write anywhere"
+ 			- instead of same codebase, same principles
+ 			- "things like component composition and declarative UI"
+ 		- goal: same engineers can write both apps, not that the same code runs both apps
+ 		
+ 		- Under the hood
+ 			- Virtual DOM as initially big standout selling point for React
+ 				- object representation of DOM that it can diff on setState and do "reconciliation"
+ 			- since DOM is untethered from actual DOM, can do same thing with iOS or Android views
+ 			- 
+ */

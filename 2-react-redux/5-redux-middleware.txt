@@ -117,7 +117,7 @@ export const fetchTodos = () => fetch('api/todos');
 // actions/todo_actions.js
 import * as TodoAPIUtil from '../util/todos_api_util';
 
-export const RECEIVE_TODOS = "RECEIVE_TODOS";
+export const RECEIVE_TODOS = 'RECEIVE_TODOS';
 
 export const receiveTodos = todos => ({ 	// action creator returning an action object
 	type: RECEIVE_TODOS,
