@@ -54,4 +54,240 @@
 		- Install simulators for both platforms in order to demo projects for this course
 			https://facebook.github.io/react-native/docs/getting-started.html
 
+		- Bundling errors
+			"If you're seeing bundling errors while attempting to run a simulator, try changing your Babel preset for React Native to version 2.1.0. Then, remove your node-modules directory, reinstall with npm install, and run the simulator again. For more information, check out this post on Stack Overflow."
+
+		- Next step is to build our app
+
+			create-react-native-app UdaciFitness
+			cd UdaciFitness
+			yarn start
+
+			- check out your App.js file
+			- press a or i to run one of the emulators
+			- scan the QR code to get app running on phone
+			- notice the live reloading on simulators!
+
+		- support for ES6, JSX, Flow and Fetch
+ */
+
+// create a ./utils folder and add the following files to it:
+ 	// - colors.js
+ 	// - helpers.js
+ 	// - _calendar.js
+
+// utils/colors.js
+export const purple = '#292477'
+export const gray = '#757575'
+export const white = '#fff'
+export const red = '#b71845'
+export const orange = '#f26f28'
+export const blue = '#4e4cb8'
+export const lightPurp = '#7c53c3'
+export const pink = '#b93fb3'
+
+// utils/helpers.js
+export function getMetricMetaInfo (metric) {
+  const info = {
+    run: {
+      displayName: 'Run',
+      max: 50,
+      unit: 'miles',
+      step: 1,
+      type: 'steppers',
+      getIcon() {
+        return (
+          <View style={[styles.iconContainer, {backgroundColor: red}]}>
+            <MaterialIcons
+              name='directions-run'
+              color={white}
+              size={35}
+            />
+          </View>
+        )
+      }
+    },
+    bike: {
+      displayName: 'Bike',
+      max: 100,
+      unit: 'miles',
+      step: 1,
+      type: 'steppers',
+      getIcon() {
+        return (
+          <View style={[styles.iconContainer, {backgroundColor: orange}]}>
+            <MaterialCommunityIcons
+              name='bike'
+              color={white}
+              size={32}
+            />
+          </View>
+        )
+      }
+    },
+    swim: {
+      displayName: 'Swim',
+      max: 9900,
+      unit: 'meters',
+      step: 100,
+      type: 'steppers',
+      getIcon() {
+        return (
+          <View style={[styles.iconContainer, {backgroundColor: blue}]}>
+            <MaterialCommunityIcons
+              name='swim'
+              color={white}
+              size={35}
+            />
+          </View>
+        )
+      }
+    },
+    sleep: {
+      displayName: 'Sleep',
+      max: 24,
+      unit: 'hours',
+      step: 1,
+      type: 'slider',
+      getIcon() {
+        return (
+          <View style={[styles.iconContainer, {backgroundColor: lightPurp}]}>
+            <FontAwesome
+              name='bed'
+              color={white}
+              size={30}
+            />
+          </View>
+        )
+      }
+    },
+    eat: {
+      displayName: 'Eat',
+      max: 10,
+      unit: 'rating',
+      step: 1,
+      type: 'slider',
+      getIcon() {
+        return (
+          <View style={[styles.iconContainer, {backgroundColor: pink}]}>
+            <MaterialCommunityIcons
+              name='food'
+              color={white}
+              size={35}
+            />
+          </View>
+        )
+      }
+    },
+  }
+
+  return typeof metric === 'undefined'
+    ? info
+    : info[metric]
+}
+
+export function isBetween (num, x, y) {
+  if (num >= x && num <= y) {
+    return true
+  }
+
+  return false
+}
+
+export function calculateDirection (heading) {
+  let direction = ''
+
+  if (isBetween(heading, 0, 22.5)) {
+    direction = 'North'
+  } else if (isBetween(heading, 22.5, 67.5)) {
+    direction = 'North East'
+  } else if (isBetween(heading, 67.5, 112.5)) {
+    direction = 'East'
+  } else if (isBetween(heading, 112.5, 157.5)) {
+    direction = 'South East'
+  } else if (isBetween(heading, 157.5, 202.5)) {
+    direction = 'South'
+  } else if (isBetween(heading, 202.5, 247.5)) {
+    direction = 'South West'
+  } else if (isBetween(heading, 247.5, 292.5)) {
+    direction = 'West'
+  } else if (isBetween(heading, 292.5, 337.5)) {
+    direction = 'North West'
+  } else if (isBetween(heading, 337.5, 360)) {
+    direction = 'North'
+  } else {
+    direction = 'Calculating'
+  }
+
+  return direction
+}
+
+export function timeToString (time = Date.now()) {
+  const date = new Date(time)
+  const todayUTC = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
+  return todayUTC.toISOString().split('T')[0]
+}
+
+
+// utils/_calendar.js
+import { AsyncStorage } from 'react-native'
+import { getMetricMetaInfo, timeToString } from './helpers'
+
+export const CALENDAR_STORAGE_KEY = 'UdaciFitness:calendar'
+
+function getRandomNumber (max) {
+  return Math.floor(Math.random() * max) + 0
+}
+
+function setDummyData () {
+  const { run, bike, swim, sleep, eat } = getMetricMetaInfo()
+
+  let dummyData = {}
+  const timestamp = Date.now()
+
+  for (let i = -183; i < 0; i++) {
+    const time = timestamp + i * 24 * 60 * 60 * 1000
+    const strTime = timeToString(time)
+    dummyData[strTime] = getRandomNumber(3) % 2 === 0
+      ? {
+          run: getRandomNumber(run.max),
+          bike: getRandomNumber(bike.max),
+          swim: getRandomNumber(swim.max),
+          sleep: getRandomNumber(sleep.max),
+          eat: getRandomNumber(eat.max),
+        }
+      : null
+  }
+
+  AsyncStorage.setItem(CALENDAR_STORAGE_KEY, JSON.stringify(dummyData))
+
+  return dummyData
+}
+
+function setMissingDates (dates) {
+  const length = Object.keys(dates).length
+  const timestamp = Date.now()
+
+  for (let i = -183; i < 0; i++) {
+    const time = timestamp + i * 24 * 60 * 60 * 1000
+    const strTime = timeToString(time)
+
+    if (typeof dates[strTime] === 'undefined') {
+      dates[strTime] = null
+    }
+  }
+
+  return dates
+}
+
+export function formatCalendarResults (results) {
+  return results === null
+    ? setDummyData()
+    : setMissingDates(JSON.parse(results))
+}
+
+
+
+/* 3. Using the Debugger
+
  */
