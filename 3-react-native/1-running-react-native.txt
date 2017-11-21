@@ -69,6 +69,38 @@
 			- notice the live reloading on simulators!
 
 		- support for ES6, JSX, Flow and Fetch
+
+    - STEPS I TOOK to start building apps
+      
+      (had to get Homebrew permissions since it had been installed by another user on same machine) 
+      
+      brew install yarn
+      brew link yarn
+      npm install -g react-native-cli
+      brew install node       (error already installed)
+      brew install watchman
+
+      (Install Xcode from Apple Store) 
+      (Install Xcode command line tools through Xcode Preferences menu)
+
+      npm install -g create-react-native-app
+
+      react-native init ProjectName
+      cd ProjectName
+      react-native run-ios
+      (delete ProjectName/IOS/builds)
+      npm install
+      react-native run-ios            (again)
+      (the app now loads!)
+
+
+    - STEPS I TOOK to start building UdaciFitness specifically
+
+      cd into my udacity-react-nanodegree/projects
+      create-react-native-app udacifitness
+      cd udacifitness
+      subl .
+      yarn start udacifitness
  */
 
 // create a ./utils folder and add the following files to it:
@@ -289,5 +321,23 @@ export function formatCalendarResults (results) {
 
 
 /* 3. Using the Debugger
+  
+  IOS
+  - Open tools: SHAKE (or select that option in simulator menu) or CMD+D
+  - CMD+D > Debugger Mode JS
+    - look at console window
+    - in text editor throw in debugger to test that all the normal stuff works
+      console.log('Before');
+      debugger;
+      console.log('After');
+  - CMD+D > Toggle Element Inspector
+    - click on things now see box model inspector with style applied
+  - Refreshing
+    - usually native means need to recompile
+    - BUT not here, just double-tap r! (or CMD+R)
+    - or shake your phone and presh refresh
+
+  Android
+  - similar deal but use CMD+M
 
  */
