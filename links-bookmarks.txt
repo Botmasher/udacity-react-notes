@@ -146,6 +146,19 @@ https://tadeuzagallo.com/blog/react-native-bridge/
 Create React App, Expo and simulating: 
 https://facebook.github.io/react-native/docs/getting-started.html
 
+Google's Material Design vs Apple's Human Interface Design:
+https://material.io/guidelines/material-design/introduction.html
+https://developer.apple.com/ios/human-interface-guidelines/overview/themes/
+
+Vector icon directory:
+https://expo.github.io/vector-icons/
+
+Check out more components beyond the basic ones:
+https://facebook.github.io/react-native/docs/components-and-apis.html#components-and-apis
+https://facebook.github.io/react-native/docs/activityindicator.html
+https://facebook.github.io/react-native/docs/picker.html
+https://facebook.github.io/react-native/docs/webview.html
+https://facebook.github.io/react-native/docs/modal.html
 
 
 -----

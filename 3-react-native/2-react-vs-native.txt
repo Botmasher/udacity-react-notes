@@ -1,0 +1,29 @@
+/*
+		Lesson 2: React vs React Native 
+		React Native
+
+		- see how differ from UI and UX perspective
+		- components that React Native comes with
+		- integrate Redux into a React Native app
+ */
+
+
+/* 2. Web vs Native
+		- React Native lets you captialize on web dev experience
+		- BUT mobile apps are very diff
+		- here's what to watch out for:
+
+		(1) animations: button presses, transitions, other subtle feedback is normal for mobile users
+			- tell a story about how your app works (return to this in lesson 5)
+		(2) navigation: routers function as a STACK, pushing and popping individual screens as needed
+			- so a screen is not just a URL mapped to a UI component!
+		(3) Android vs iOS design
+			- Android: Google's Material Design (https://material.io/guidelines/material-design/introduction.html)
+			- iOS: Apple's Human Interface Design (https://developer.apple.com/ios/human-interface-guidelines/overview/themes/)
+			- so design to make sure each app FEELS LIKE an Android app vs an iOS app
+		(4) Android vs iOS navigation
+			- Android devices have navigation bar at bottom of screen, universally allowing users to go back/forth btwn screens
+			- iOS devices must implement their own navigation (including a back button, maybe a nav bar)
+			- tab navigation (to access high-level content): bottom of screen in iOS, top in Android
+				- explore React Native's TabNavigator in Lesson 4
+ */
