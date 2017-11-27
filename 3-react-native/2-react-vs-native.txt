@@ -18,12 +18,297 @@
 		(2) navigation: routers function as a STACK, pushing and popping individual screens as needed
 			- so a screen is not just a URL mapped to a UI component!
 		(3) Android vs iOS design
-			- Android: Google's Material Design (https://material.io/guidelines/material-design/introduction.html)
-			- iOS: Apple's Human Interface Design (https://developer.apple.com/ios/human-interface-guidelines/overview/themes/)
+			- Android: Google's Material Design
+				https://material.io/guidelines/material-design/introduction.html
+			- iOS: Apple's Human Interface Design
+				https://developer.apple.com/ios/human-interface-guidelines/overview/themes/
 			- so design to make sure each app FEELS LIKE an Android app vs an iOS app
 		(4) Android vs iOS navigation
-			- Android devices have navigation bar at bottom of screen, universally allowing users to go back/forth btwn screens
+			- Android devices have navigation bar at bottom of screen, universally allowing users to back/fwd btwn screens
 			- iOS devices must implement their own navigation (including a back button, maybe a nav bar)
 			- tab navigation (to access high-level content): bottom of screen in iOS, top in Android
 				- explore React Native's TabNavigator in Lesson 4
  */
+
+/* 3. Common React Native Components
+	- not access to elements provided by HTML spec unlike dev for web
+	- <View></View> and <Text></Text> components as analogous to <div></div> and <span></span>
+	- View maps to Android.view and on iOS it maps to UIView
+	- /!\ on web can have raw text not wrapped in span, but here MUST wrap c Text component else get error /!\
+	
+	- Triathlon Tracking App we'll be building
+		- calendar with reminder to log info each day
+		- every day selected you get data cards from that day on
+		- log each exercise plus food and sleep
+		- reset and clear info each day (on a day's card)
+		- add/log a new entry
+			- +/- buttons to add miles for running and biking, meters for swimming
+			- slider bars to add hours for sleeping, rating for eating
+		- simple happyface screen that says you already logged your info
+		- last screen is a real-time tracker
+			- heading (e.g. West)
+			- altitude
+			- current speed
+
+	- this is a pretty big app, so expect lots of vids
+	- "scrolling on the simulator is always a problem"
+
+	- automatic access to icon sets by default, amounting to thousands of icons out of the box:
+		https://expo.github.io/vector-icons
+
+ */
+
+// importing icons
+import { Ionicons } from '@expo/vector-icons';
+
+// rendering icons
+export default class App extends React.Component {
+	render() {
+		render (
+			<View style={styles.container}>
+				<Ionicons name="ios-pizza" color="red" size={100} />
+			</View>
+		);
+	}
+}
+
+// in helpers.js let's create a helper function for the metrics we're tracking
+export function getMetricMetaInfo(metric) {
+	const info = {
+		run: {
+			displayName: 'Run',
+			max: 50,
+			unit: 'miles',
+			step: 1,
+			type: 'steppers', 		// increment and decrement buttons in our UI (vs slider)
+			getIcon() {
+				return (
+					<View>
+						<MaterialIcons
+							name='directions-run'
+							color={'black'}
+							size={35}
+						/>
+					</View>
+				)
+			}
+		},
+		bike: {
+			displayName: 'Bike',
+			max: 100,
+			unit: 'miles',
+			step: 1,
+			type: 'steppers',
+			getIcon() {
+				return (
+					<View>
+						<MaterialCommunityIcons
+							name='bike'
+							color={'black'}
+							size={35}
+						/>
+					</View>
+				)
+			}
+		},
+		swim: {
+			displayName: 'Swim',
+			max: 9900,
+			unit: 'meters',
+			step: 1,
+			type: 'steppers',
+			getIcon() {
+				return (
+					<View>
+						<MaterialCommunityIcons
+							name='swim'
+							color={'black'}
+							size={35}
+						/>
+					</View>
+				)
+			}
+		},
+		sleep: {
+			displayName: 'Sleep',
+			max: 24,
+			unit: 'hours',
+			step: 1,
+			type: 'silder',
+			getIcon() {
+				return (
+					<View>
+						<FontAwesome
+							name='bed'
+							color={'black'}
+							size={35}
+						/>
+					</View>
+				)
+			}
+		},
+		eat: {
+			displayName: 'Eat',
+			max: 10,
+			unit: 'rating',
+			step: 1,
+			type: 'slider',
+			getIcon() {
+				return (
+					<View>
+						<MaterialCommunityIcons
+							name='food'
+							color={'black'}
+							size={35}
+						/>
+					</View>
+				)
+			}
+		}
+	};
+	return typeof metric === 'undefined'
+		? info
+		: info[metric]
+	;
+}
+
+// at the top of helpers.js
+import React from 'react';
+import { View } from 'react-native';
+import { FontAwesome, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { white } from './colors';
+
+
+// now let's use our getMetricMetaInfo in a component!
+	// - Create folder: 	./components
+	// - Create file:  		AddEntry.js
+
+// inside AddEntry.js
+import React, { Component } from 'react';
+import { View, Text } from 'react-native';
+import { getMetricMetaInfo } from '../utils/helpers';
+
+export default class AddEntry extends Component {
+	render () {
+		return (
+			<View>
+				{getMetricMetaInfo('bike').getIcon()}
+			</View>
+		);
+	}
+}
+
+// inside App.js
+export default class App extends React.Component {
+	render() {
+		return (
+			<View><AddEntry /></View>
+		);
+	}
+}
+
+// now we need to handle our input buttons for user data we're tracking
+// in AddEntry.js
+export default class AddEntry extends Component {
+	state = {
+		run: 0,
+		bike: 0,
+		swim: 0,
+		sleep: 0,
+		eat: 0
+	};
+	increment = (metric) => {
+		const { max, step } = getMetricMetaInfo(metric);
+		this.setState((state) => {
+			const count = state[metric] + step;
+			return {
+				...state,
+				[metric]: count > max ? max : count
+			};
+		});
+	};
+	decrement = (metric) => {
+		this.setState((state) => {
+			const count = state[metric] - getMetricMetaInfo(metric).step;
+			return {
+				...state,
+				[metric]: count < 0 ? 0 : count
+			};
+		});
+	};
+	slide = (metric, value) => {
+		this.setState(() => ({
+			[metric]: value, 
+		}));
+	};
+
+	...
+
+}
+
+
+// build out the very minimal UI for sliders and steppers
+// - create UdaciSlider.js
+import React from 'react';
+import { View, Text } from 'react-native';
+
+export default function UdaciSlider () {
+	return (
+		<View>
+			<Text>UdaciSlider</Text>
+		</View>
+	);
+}
+
+// - create UdaciSteppers.js
+import React from 'react';
+import { View, Text } from 'react-native';
+
+export default function UdaciSteppers() {
+	return (
+		<View>
+			<Text>UdaciSteppers</Text>
+		</View>
+	);
+}
+
+
+// inside AddEntry.js
+import UdaciSlider from './UdaciSlider';
+import UdaciSteppers from './UdaciSteppers';
+
+// don't just render but get specific type each metric cares about
+...
+	render () {
+		const metaInfo = getMetricMetaInfo();
+		return (
+			<View>
+				{Object.keys(metaInfo).map((key) => {
+					const { getIcon, type, ...rest } = metaInfo[key];
+					const value = this.state[key];
+					return (
+						<View key={key}>
+							{getIcon()}
+							{type === 'slider'
+								? <UdaciSlider
+										value={value}
+										onChange={(value) => this.slide(key, value)}
+										{...rest}
+									/>
+								: <UdaciSteppers
+										value={value}
+										onIncrement={() => this.increment(key)}
+										onDecrement={() => this.decrement(key)}
+										{...rest}
+									/>
+							}
+						</View>
+					);
+				})}
+			</View>
+		);
+	}
+}
+
+//  you should now be getting steppers for the top 3 and sliders for the bottom 2 metrics!
+
