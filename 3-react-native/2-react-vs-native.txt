@@ -58,10 +58,10 @@
 
  */
 
-// importing icons
+// example importing icons
 import { Ionicons } from '@expo/vector-icons';
 
-// rendering icons
+// rendering icons - example App.js
 export default class App extends React.Component {
 	render() {
 		render (
@@ -72,7 +72,7 @@ export default class App extends React.Component {
 	}
 }
 
-// in helpers.js let's create a helper function for the metrics we're tracking
+// in OUR APP helpers.js - let's create a helper function for the metrics we're tracking
 export function getMetricMetaInfo(metric) {
 	const info = {
 		run: {
@@ -179,7 +179,7 @@ import { FontAwesome, MaterialIcons, MaterialCommunityIcons } from '@expo/vector
 import { white } from './colors';
 
 
-// now let's use our getMetricMetaInfo in a component!
+// now let's use our MetricMetaInfo into a component!
 	// - Create folder: 	./components
 	// - Create file:  		AddEntry.js
 
@@ -199,6 +199,8 @@ export default class AddEntry extends Component {
 }
 
 // inside App.js
+import AddEntry from './components/AddEntry';
+
 export default class App extends React.Component {
 	render() {
 		return (
@@ -241,9 +243,7 @@ export default class AddEntry extends Component {
 			[metric]: value, 
 		}));
 	};
-
 	...
-
 }
 
 
@@ -310,5 +310,214 @@ import UdaciSteppers from './UdaciSteppers';
 	}
 }
 
-//  you should now be getting steppers for the top 3 and sliders for the bottom 2 metrics!
+//  you should now be getting steppers text for the top 3 and slider text for the bottom 2 metrics!
 
+// Now compare final versions of app screens we're building to current; notice the date on the top
+
+// create file: 	DateHeader.js
+import React from 'react';
+import { Text } from 'react-native';
+
+export default function DateHeader ({ date }) {
+	return (
+		<Text>
+			{date}
+		</Text>
+	);
+}
+
+// back in AddEntry.js - import and render the date
+import DateHeader from './DateHeader';
+...
+	return (
+		<View>
+			<DateHeader date={(new Date()).toLocaleDateString()} />
+			...
+		</View>
+...
+
+// App.js imports
+import {
+	Text,
+	View,
+	StyleSheet,
+	TouchableHighlight,				// transform from primary color to another color when press on it
+	TouchableNativeFeedback,
+	TouchableOpacity,
+	TouchableWithoutFeedback
+} from 'react-native';
+
+// App.js render
+	handlePress = () => {
+		alert('Hello!');
+	};
+	render() {
+		return (
+			<View style={styles.container}>
+				<TouchableHighlight style={styles.btn} onPress={this.handlePress} underlayColor="#d4271b">
+					<Text style={styles.btnText}>Touchable Highlight</Text>
+				</TouchableHighlight>
+			</View>
+		);
+	}
+}
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		marginLeft: 10,
+		marginRight: 10,
+		alignItems: 'center',
+		justifyContent: 'center'
+	},
+	btn: {
+		backgroundColor: '#e53224',
+		padding: 10,
+		paddingLeft: 50,
+		paddingRight: 50,
+		justifyContent: 'center',
+		alignItems: 'center',
+		borderRadius: 5
+	},
+	btnText: {
+		color: '#fff'
+	}
+});
+
+// now try switching the button to TouchableOpacity instead
+...
+			<View style={styles.container}>
+				<TouchableOpacity style={styles.btn} onPress={this.handlePress}>
+					<Text style={styles.btnText}>Touchable Opacity</Text>
+				</TouchableOpacity>
+			</View>
+...
+
+// try TouchableWithoutFeedback - does nothing but doesn't work with Text child so have a View child
+	// for special cases - /!\ avoid bc Native all about giving feedback to the user /!\
+...
+			<View style={styles.container}>
+				<TouchableWithoutFeedback onPress={this.handlePress}>
+					<View style={styles.btn}>
+						<Text style={styles.btnText}>Touchable No Feedback</Text>
+					</View>
+				</TouchableWithoutFeedback>
+			</View>
+...
+
+// finally check out TouchableNativeFeedback (Android only - subtle little ripple effect) - also no Text child
+...
+			<View style={styles.container}>
+				<TouchableNativeFeedback
+					background={TouchableNativeFeedback.SelectableBackground()}
+					onPress={this.handlePress}>
+					<View style={styles.btn}>
+						<Text style={styles.btnText}>Touchable Android Feedback</Text>
+					</View>
+				</TouchableNativeFeedback>
+			</View>
+...
+
+// AddEntry.js - handle submit on button click
+	// - use time date formatter from utils helpers.js
+import  { getMetricMetaInfo, timeToString } from '../utils/helpers';
+...
+	submit = () => {
+		const key = timeToString();
+		const entry = this.state;
+		
+		// Update Redux
+		
+		this.setState(() => ({
+			run: 0,
+			bike: 0,
+			swim: 0,
+			sleep: 0,
+			eat: 0
+		}));
+		
+		// Navigate to home
+		
+		// Save to db
+		
+		// Clear local notifications
+	};
+...
+
+// also in AddEntry.js - create Submit Button UI above the AddEntry class
+import { View, TouchableOpacity, Text } from 'react-native';
+
+function SubmitBtn({ onPress }) {
+	return (
+		<TouchableOpacity onPress={onPress}>
+			<Text>Submit</Text>
+		</TouchableOpacity>
+	);
+}
+
+// then below at the bottom of the render
+	<View>
+		...
+		<SubmitBtn onPress={this.submit()} />
+	</View>
+
+// Implementing native sliders, which are built-in components in React Native
+// in App.js
+import { StyleSheet, Text, View, Slider } from 'react-native';
+
+	...
+		<View style={styles.container}>
+			<Slider
+				minimumValue={0}
+				maximumValue={10}
+				step={1}
+				value={this.state.value}
+				onValueChange={(value) => this.setState({value})}
+			/>
+			<Text>
+				Value: {this.state.value}
+			</Text>
+		</View>
+
+// UdaciSlider.js - with the above in mind build out our slider component
+import { View, Text, Slider } from 'react-native';
+// destructure incoming props (see AddEntry) and render Slider plus display
+export default function UdaciSlider({ max, unit, step, value, onChange }) {
+	return (
+		<View>
+			<Slider
+				step={step}
+				value={value}
+				maximumValue={max}
+				minimumValue={0}
+				onValueChange={onChange}
+			/>
+			<View>
+				<Text>{value}</Text>
+				<Text>{unit}</Text>
+			</View>
+		</View>
+	);
+}
+
+// UdaciSteppers.js - these are going to be the increment/decrement buttons
+import { View, Text, TouchableOpacity } from 'react-native';
+import { FontAwesome, Entypo } from '@expo/vector-icons';
+// remember what we're passing in - destructure it and render
+export default function UdaciSteppers ({ max, unit, step, value, onIncrement, onDecrement }) {
+	return (
+		<View>
+			<View>
+				<TouchableOpacity onPress={onDecrement}>
+					<FontAwesome name="minus" size={30} color="black" />
+				</TouchableOpacity>
+				<TouchableOpacity onPress={onIncrement}>
+					<FontAwesome name="plus" size={30} color="black" />
+				</TouchableOpacity>
+			</View>
+			<View>
+				<Text>{value}</Text>
+				<Text>{unit}</Text>
+			</View>
+		</View>
+	)
+}
