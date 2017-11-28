@@ -826,3 +826,130 @@ import { submitEntry, removeEntry } from '../utils/api';
 		// Update db - NOW WE CAN ADD THIS below
 		removeEntry(key);
 	};
+
+
+
+
+
+/* 5. Redux and React Native
+		- since Redux is library and framework agnostic, we can use it here too
+		- since it's fundamentally just JS, we can add it just like we're used to
+ */
+
+// start by creating ./actions/index.js
+	// - really only two: ADD ENTRY to db, RECEIVE ENTRIES from db
+export const RECEIVE_ENTRIES = 'RECEIVE_ENTRIES';
+export const ADD_ENTRY = 'ADD_ENTRY';
+
+export function receiveEntries(entries) {
+	return {
+		type: RECEIVE_ENTRIES,
+		entries
+	};
+}
+
+export function addEntry(entry) {
+	return {
+		type: ADD_ENTRY,
+		entry
+	};
+}
+
+
+// now onto our ./reducers/index.js
+import { RECEIVE_ENTRIES, ADD_ENTRY } from '../actions';
+
+function entries (state={}, action) {
+	switch(action.type) {
+		case RECEIVE_ENTRIES:
+			return {
+				...state,
+				...action.entries
+			};
+		case ADD_ENTRY:
+			return {
+				...state,
+				...action.entry
+			};
+		default:
+			return state;
+	}
+}
+
+export default entries;
+
+
+// make sure we add redux package
+yarn add redux react-redux
+yarn start
+
+// now in App.js
+...
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
+import reducer from './reducers';
+
+export default class App extends React.Component {
+	render() {
+		return (
+			<Provider store={createStore(reducer)}>
+				<View>
+					<AddEntry />
+				</View>
+			</Provider>
+		);
+	}
+}
+
+
+// back in AddEntry.js - connect to Redux
+...
+import { connect } from 'react-redux';
+import { addEntry } from '../actions';
+
+class AddEntry extends React.Component { 	// NO LONGER export!
+	...
+}
+
+export connect()(AddEntry);
+
+
+// helpers.js
+...
+export function getDailyReminderValue() {
+	return {
+		today: "Don't forget to log your data today!"
+	};
+}
+
+
+// back in AddEntry - remember the notes we left to deal with Redux in submit and remove entry methods?
+...
+import { getDailyReminderValue } from '../utils/helpers'; 	// better still - add to helpers import above this line
+
+	...
+	submit = () => {
+		const key = timeToString();
+		const entry = this.state;
+		this.props.dispatch(addEntry({
+			[key]: entry
+		}));
+		...
+	}
+	reset = () => {
+		const key = timeToString();
+		this.props.dispatch(addEntry(){
+			[key]: getDailyReminderValue()
+		});
+	}
+	...
+
+function mapStateToProps(state) {
+	const key = timeToString();
+	// our check for displaying a notice to log info for that day
+	return {
+		alreadyLogged: state[key] && typeof state[key].today === 'undefined'
+	}
+}
+
+export connect(mapStateToProps)(AddEntry);
