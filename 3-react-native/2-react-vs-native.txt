@@ -521,3 +521,231 @@ export default function UdaciSteppers ({ max, unit, step, value, onIncrement, on
 		</View>
 	)
 }
+
+// AddEntry.js - confirmation with a reset text button
+import { Ionicons } from '@expo/vector-icons';
+import TextButton from './TextButton'; 	// we write this component below
+...
+	reset = () => { 								// to pass to our TextButton on press
+		const key = timeToString();
+		
+		// Update Redux
+		
+		// Route to home
+		
+		// Update db
+
+	};
+
+	render() {
+		const metaInfo = getMetricMetaInfo();
+		if (this.props.alreadyLogged) {
+			return (
+				<View>
+					<Ionicons
+						name='ios-happy-outline'
+						size={100}
+					/>
+					<Text>You already logged your info for today</Text>
+					<TextButton onPress={this.reset}>Reset</TextButton>
+				</View>
+			);
+		}
+...
+
+// create TextButton.js - text button to be reused a few other places in app
+import React from 'react';
+import { Text, TouchableOpacity } from 'react-native';
+
+export default function TextButton ({ children, onPress }) { 		// children for rendering as nested text
+	return (
+		<TouchableOpacity onPress={onPress}>
+			<Text>{children}</Text>
+		</TouchableOpacity>
+	);
+}
+
+
+/* Pause UdaciFitness for the rest of this section - let's talk about a few other necessary components first
+
+	Think for a moment about most mobile apps:
+		- they're just lists of data
+		- the data change
+		- the app decides how it should display that changing data to user
+
+	So let's play with how we display performant lists inside of React Native
+ */
+// IMAGINE an App.js that displays data from a reviews.js that returns an object with user reviews
+import React from 'react';
+import { View, Text, StyleSheet, Image } from 'react-native';
+import getReviews from './reviews';
+function Review ({ name, text, avatar }) {
+	return (
+		<View style={styles.review}>
+			<Image source={{uri: avatar}} style={styles.avatar}/>
+			<View style={{flex: 1, flexWrap: 'wrap'}}>
+				<Text style={fontSize: 20}>{name}</Text>
+				<Text>{text}</Text>
+			</View>
+		</View>
+	);
+}
+export default class App extends React.Component {
+	render() {
+		const reviews = getReviews();
+		return (
+			<View style={styles.container}>
+				{reviews.map(({ name, text, avatar}) => <Review key={name} name={name} text={text} avatar={avatar} />)}
+			</View>
+		);
+	}
+}
+
+// the above works but we CAN'T scroll!
+	// - the View is confined to the area on the screen
+	// - so instead we can wrap our list inside of a ScrollView
+import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+...
+			<ScrollView style={styles.container}>
+				{reviews.map(({ name, text, avatar}) => <Review key={name} name={name} text={text} avatar={avatar} />)}
+			</ScrollView>
+...
+
+// but ScrollView renders each item in list regardless if user can see it or not
+	// - wait that's not very performant!
+	// - true, so why don't we just render what the user can currently see?
+	// - FlatList component just renders items user can currently see
+	// - FlatList needs some data and renderItem method responsible for rendering each iteration on that data
+import { View, Text, StyleSheet, Image, FlatList } from 'react-native';
+...
+	renderItem = ({ item }) => {
+		return (<Review key={name} name={name} text={text} avatar={avatar} />);
+	};
+	...
+			<View style={styles.container}>
+				<FlatList data={reviews} renderItem={this.renderItem} />
+			</View>
+		);
+	}
+}
+
+// BUT that could be written more succintly like this
+	...
+	renderItem = ({ item }) => {
+		return (<Review {...item} />);
+	};
+	...
+// now if you load on actual phone scrolling thru long list, notice huge performance gain!
+
+// There's also SectionList - supports adding section headers to a list (unlike FlatList)
+// https://facebook.github.io/react-native/docs/sectionlist.html
+
+
+/* Still Paused - let's talk about forms
+		- work like you know, where component is single source of truth for a form
+		- a few you need to know: TextInput, KeyboardAvoidingView, Slider, Switch
+		- note that TextInput supports BOTH onChange and onChangeText
+			- onChangeText just passes along the text value as arg
+			- onChange passes along the entire event object as arg
+ */
+import React from 'react';
+import { Text, View, StyleSheet, Switch, TextInput, KeyboardAvoidingView, Image } from 'react-native';
+
+export default class App extends React.Component {
+	state = {
+		input: '@mytwitterhandle',
+		showInput: false
+	}
+	handleToggleSwitch = () => {
+		this.setState((state) => ({
+			showInput: !state.showInput,
+		}));
+	};
+	handleTextChange = (input) => {
+		this.setState(() => ({
+			input
+		}));
+	};
+	render() {
+		const { input, showInput } = this.state; 
+		// show or hide TextInput based on a toggle button and update state on textchange
+		return (
+			<View style={styles.container}>
+				<Image
+					source={{uri: 'example.com/someimgurl.png'}}
+					style={styles.img}
+				/>
+				<Switch
+					value={showInput}
+					onValueChange={this.handleToggleSwitch}
+				/>
+				{showInput && (
+					<TextInput
+						value={input}
+						style={styles.input}
+						onChangeText={this.handleTextChange}
+					/>
+				)}
+			</View>
+		);
+	}
+}
+
+// PROBLEM above: when keyboard comes up, it hides the TextInput!
+// fortunately Reat Native has a KeyboardAvoidingView
+	// - replace normal view with it
+	// - behavior specifies how it will avoid
+	...
+			<KeyboardAvoidingView behavior="padding" style={styles.container}>
+				<Image
+					source={{uri: 'example.com/someimgurl.png'}}
+					style={styles.img}
+				/>
+				<Switch
+					value={showInput}
+					onValueChange={this.handleToggleSwitch}
+				/>
+				{showInput && (
+					<TextInput
+						value={input}
+						style={styles.input}
+						onChange={this.handleTextChange}
+					/>
+				)}
+			</KeyboardAvoidingView>
+	...
+
+// finally let's show an image within a view
+// - first from local
+import React from 'react';
+import { Text, View, StyleSheet, Image } from 'react-native';
+export default class App extends React.Component {
+	render() {
+		return (
+			<View style={styles.container}>
+				<Image style={styles.img} source={require('./path/file.png')} />
+			</View>
+		);
+	}
+}
+
+// - now from image hosted on external source somewhere
+import React from 'react';
+import { Text, View, StyleSheet, Image } from 'react-native';
+export default class App extends React.Component {
+	render() {
+		return (
+			<View style={styles.container}>
+				<Image style={styles.img} source={require('./path/file.png')} />
+				<Image style={{margin: 50}} />
+				<Image style={styles.img} source={{uri: 'https://specificurl.com/imagename.png'}} />
+			</View>
+		);
+	}
+}
+
+
+
+
+/* 4. AsyncStorage
+ */

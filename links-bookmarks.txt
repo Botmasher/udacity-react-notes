@@ -160,6 +160,15 @@ https://facebook.github.io/react-native/docs/picker.html
 https://facebook.github.io/react-native/docs/webview.html
 https://facebook.github.io/react-native/docs/modal.html
 
+SectionList for going beyond ScrollView or FlatList for rendering many items lists of data:
+https://facebook.github.io/react-native/docs/sectionlist.html
+
+TextInput's onChange vs onChangeText properties:
+https://stackoverflow.com/questions/44416541/react-native-difference-between-onchange-vs-onchangetext-of-textinput
+
+Familiarize yourself with components beyond basics discussed here - start with Picker, Modal, WebView, ActivityIndicator:
+https://facebook.github.io/react-native/docs/components-and-apis.html#components-and-apis
+
 
 -----
 SLACK
