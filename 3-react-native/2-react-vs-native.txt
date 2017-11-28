@@ -457,7 +457,7 @@ function SubmitBtn({ onPress }) {
 // then below at the bottom of the render
 	<View>
 		...
-		<SubmitBtn onPress={this.submit()} />
+		<SubmitBtn onPress={this.submit} />
 	</View>
 
 // Implementing native sliders, which are built-in components in React Native
@@ -747,5 +747,82 @@ export default class App extends React.Component {
 
 
 
+
 /* 4. AsyncStorage
+		- localStorage to persist data between sessions directly in the browser!
+		- one way to persist might be to update localStorage every time app state is updated
+		- after store is created, call store.subscribe() and pass in a callback func
+		- save data related to app with each dispatch
  */
+
+// store.js - example localStorage store to subscribe to
+	// - then it will update on dispatch
+import { createStore } from 'redux';
+import Reducer from '../reducers/reducer';
+
+const configureStore = () => {
+  const store = createStore(Reducer);
+
+  store.subscribe(() => {
+    localStorage.state = JSON.stringify(store.getState());
+  });
+
+  return store;
+};
+
+export default configureStore;
+
+
+// - instead use AsyncStorage
+	// - has three main methods: setItem, removeItem, clearItem
+		// - setItem
+		// - removeItem
+		// - clear
+
+// - we'll use in AddEntry.js where we've left notes to Save to db and Update db
+
+// create ./utils/api.js
+// in api.js
+import { AsyncStorage } from 'react-native';
+import { CALENDAR_STORAGE_KEY } from './_calendar';
+
+export function submitEntry ({ entry, key }) {
+	return AsyncStorage.mergeItem(CALENDAR_STORAGE_KEY, JSON.stringify({
+		[key]: entry,
+
+	}));
+}
+
+export function removeEntry (key) {
+	return AsyncStorage.getItem(CALENDAR_STORAGE_KEY)
+		.then((results) => {
+			const data = JSON.parse(results);
+			data[key] = undefined;
+			delete data[key];
+			AsyncStorage.setItem(CALENDAR_STORAGE_KEY, JSON.stringify(data));
+		});
+}
+
+// and now in AddEntry.js
+...
+import { submitEntry, removeEntry } from '../utils/api';
+...
+	submit = () => {
+		const key = timeToString();
+		const entry = this.state;
+		// Update Redux
+		this.setState(() => ({
+			run: 0, bike: 0, swim: 0, sleep: 0, eat: 0
+		}));
+		// Navigate to home
+		// Save to db - NOW WE CAN ADD THIS below
+		submitEntry({ key, entry });
+		// Clear local notifications
+	};
+	remove = () => {
+		const key = timeToString();
+		// Update Redux
+		// Route to home
+		// Update db - NOW WE CAN ADD THIS below
+		removeEntry(key);
+	};
