@@ -169,6 +169,13 @@ https://stackoverflow.com/questions/44416541/react-native-difference-between-onc
 Familiarize yourself with components beyond basics discussed here - start with Picker, Modal, WebView, ActivityIndicator:
 https://facebook.github.io/react-native/docs/components-and-apis.html#components-and-apis
 
+Style libraries for CSS in JS:
+https://github.com/robinpowered/glamorous-native
+https://github.com/styled-components/styled-components
+
+Using CSS in JS securely:
+https://reactarmory.com/answers/how-can-i-use-css-in-js-securely
+
 
 -----
 SLACK

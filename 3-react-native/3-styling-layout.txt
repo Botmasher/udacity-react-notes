@@ -1,0 +1,100 @@
+/*	Lesson 3: Styling and Layout
+		
+	1. Introduction
+ */
+
+
+
+/* 2. CSS in JS
+	- React separates concerns at a component level, NOT a technology level
+	- What are the two things a component's for?
+		1) state - component state
+		2) presentation - JSX
+	- Presentation is more than just markup, it's also STYLES!
+	- React Native default pattern and a common pattern: just use JS
+ */
+
+// example of applying styles inline to component through React JSX
+function Avatar ({ src }) {
+  return (
+    <View>
+      <Image
+        style={{borderRadius: 5, margin: 10, width: 48, height: 48}}
+        source={{uri: 'https://exmpl.com/happy_glasses-300.png'}}
+      />
+    </View>
+  );
+}
+
+// Problems c these JS objects passed to style
+	// - clearly above things can get messy fast (like c a big obj)
+	// - so you might DRY your code and store the obj separately
+const styles = {
+  image: {
+    borderRadius: 5,
+    margin: 10,
+    width: 48,
+    height: 48
+  }
+};
+
+function Avatar ({ src }) {
+  return (
+    <View>
+      <Image
+        style={styles.image}
+        source={{uri: 'https://exmpl.com/happy_glasses-300.png'}}
+      />
+    </View>
+  );
+}
+
+// BUT React Native's StyleSheet API goes even further
+ /* Benefits:
+ 		- define multiple styles in one place
+		- move styles away from render function
+		- named styles add meaning to low-level components in render function
+		- can refer to style object id instead of creating a new stylesheet every time
+		- send style only once through the bridge
+			- subsequent uses are going to refer to an id
+		- compile-time validation of your style objects c errors in the console instead of at runtime
+ 	*/
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+
+export default class TextExample extends React.Component {
+  render() {
+    return (
+      <View>
+        <Text style={styles.greenLarge}>This is large green text!</Text>
+        <Text style={styles.red}>This is smaller red text!</Text>
+      </View>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  greenLarge: {
+    color: 'green',
+    fontWeight: 'bold',
+    fontSize: 40
+  },
+  red: {
+    color: 'red',
+    padding: 30
+  },
+});
+
+// additional styles can be added as array through styles prop
+	// - inherits styles so any last styles will take precedence
+<Text style={[styles.red, styles.greenLarge]}>Red text but no wait then actually greenLarge text.</Text>
+
+// libraries include Glamorous and Styled Components, both seeing styles as a primary concern of the component
+
+
+
+
+
+/* 3. Flexbox Guide
+ 
+ */

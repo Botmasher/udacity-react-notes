@@ -949,7 +949,7 @@ function mapStateToProps(state) {
 	// our check for displaying a notice to log info for that day
 	return {
 		alreadyLogged: state[key] && typeof state[key].today === 'undefined'
-	}
+	};
 }
 
 export connect(mapStateToProps)(AddEntry);
