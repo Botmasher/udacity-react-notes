@@ -96,5 +96,41 @@ const styles = StyleSheet.create({
 
 
 /* 3. Flexbox Guide
- 
+  - whenever approaching new tech, instructor asks, "why does this exist?"
+  - Flexbox aims to allow dynamic layouts
+    - styling elements even when the size is unknown or changing
+    - to accomplish this it moves concern from children to immediate parent
+    - e.g. instead of float left each child, tell parent that immed children in row and have space btwn
+  - Flexible vs Box Model
+    - no use of float
+    - flexible across screens and devices
+
+  - most important concept is AXES
+    - main axis (default vert)
+    - cross axis (default horiz)
+    - all else is about deciding how to position, scale, center, wrap elements along those two axes
+
+  - flexDirection
+    - by default every element has flexDirection: column  
+    - can change to flexDirection: row
+    - row switches the axes to main horiz and cross vert
+
+  - Justify Content
+    - how children align themselves to a component starting along the Main axis
+      - justifyContent: flex-start
+      - justifyContent: center
+      - justifyContent: flex-end
+      - justifyContent: space-around
+        - puts even vert space btwn each element but aligns top and bottom elements flush
+      - justifyContent: space-between
+        - puts even vert space around each element including above/below top/bottom elements
  */
+
+// but what if we flipped axes?
+container: {
+  flex: 1,
+  flexDirection: 'row',
+  justifyContent: 'space-around',
+}
+  // now justified along horiz Main axis c space around each element incl L/R of first/last element!
+
