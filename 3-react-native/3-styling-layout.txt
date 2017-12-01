@@ -134,3 +134,59 @@ container: {
 }
   // now justified along horiz Main axis c space around each element incl L/R of first/last element!
 
+/* 
+  Align Items: the Cross Axis
+  - alignItems does NOT have the same values as justifyContent
+  - you use different values to order how children align along cross axis
+    - flex-start  puts children horizontally left (top if you flip flex-direction: row)
+    - center      puts children horizontally centered (vertically centered if you flip flex-direction: row)
+    - flex-end    puts children horizontally right (bottom if you flip flex-direction: row)
+    - stretch     takes up whole row (column if you flip flex-direction: row)
+
+  - note that FlexBox for Native does NOT do percentages!
+  - BUT everything you can do c rel percents on web you can still do here
+  - flex: 1 will behave like flex-grow does on web (if you're familiar)
+ */
+
+// Flex property - here assign one sibling to 2 so that middle one's twice as large as siblings
+// End up with:     BOX | B O X | BOX
+class FlexboxExamples extends Component {
+  render() {
+    return (
+      <View style={styles.container}>
+        <View style={[styles.box, {flex: 1}]}/>
+        <View style={[styles.box, {flex: 2}]}/>
+        <View style={[styles.box, {flex: 1}]}/>
+      </View>
+    )
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  box: {
+    width: 50,
+    height: 50,
+    backgroundColor: '#e76e63',
+    margin: 10,
+  }
+});
+
+export default FlexboxExamples;
+
+// ABOVE ADD alignSelf - here drop middle box out of the positioning it inherited from parent and 
+  // - alignSelf: flex-end to the second child element
+  // - that override  parent instruction (alignItems: 'center')
+
+
+
+
+
+/* 4. Layout in React Native
+
+ */

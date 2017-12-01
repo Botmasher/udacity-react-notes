@@ -176,6 +176,10 @@ https://github.com/styled-components/styled-components
 Using CSS in JS securely:
 https://reactarmory.com/answers/how-can-i-use-css-in-js-securely
 
+Flexbox:
+https://css-tricks.com/snippets/css/a-guide-to-flexbox/
+http://flexboxfroggy.com/
+
 
 -----
 SLACK
