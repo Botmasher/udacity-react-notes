@@ -188,5 +188,38 @@ export default FlexboxExamples;
 
 
 /* 4. Layout in React Native
-
+    - Native implements Flexbox
+    - this default means some diffs
+      1) display: flex      don't need to declare this unlike CSS
+      2) flex-direction     axes default to column since we're working in mobile
+      3) flex: n
+        - on web these values set how item scales to manage space around it
+        - on mobile these values set how much % children will take up of a parent's flex
  */
+// example of using flex values in Native
+import React from 'react';
+import { View } from 'react-native';
+
+const FlexDemo = props => (
+  <View style={{flex: 1}}>
+    <View style={{flex: 1, backgroundColor: 'red'}} />
+    <View style={{flex: 2, backgroundColor: 'green'}} />
+    <View style={{flex: 3, backgroundColor: 'blue'}} />
+  </View>
+);
+
+export default FlexDemo;
+  // here child Views take up chunks of parent View (1 fills whole screen)
+  // - blue takes up 3x what red does
+  // - green takes up 2x what red does
+
+// other defaults that React Native assigns to components
+box-sizing: border-box;
+position: relative;
+align-items: stretch;
+flex-shrink: 0;
+align-content: flex-start;
+border: 0 solid black;
+margin: 0;
+padding: 0;
+min-width: 0;
