@@ -223,3 +223,147 @@ border: 0 solid black;
 margin: 0;
 padding: 0;
 min-width: 0;
+
+/*
+  Now let's start styling our project components
+ */
+// App.js - make this parent View take up all available space in mobile view
+...
+  <View style={{flex: 1}}>
+    <AddEntry />
+  </View>
+...
+
+// helpers.js - next style the icons for getMetricMetaInfo
+import { View, StyleSheet } from 'react-native';
+import { white, red, orange, blue, lightPurple, pink } from './colors';
+
+...
+const styles = StyleSheet.create({
+  iconContainer: {
+    padding: 5,
+    borderRadius: 8,
+    width: 50,
+    height: 50,
+    justifyContent: 'center',
+    alignItem: 'center',
+    marginRight: 20
+  }
+});
+
+// now every View icon style should have this
+  getIcon() {
+    return (
+      <View style={[styles.iconContainer, {backgroundColor: red}]}>
+        ...
+      </View>
+    )
+  }
+  // but set each background color DIFF'T for running, biking, etc.
+  // and change the inner icon color to WHITE
+
+/*
+  Platform API
+  - users expect their experience to match the platform they're using
+  - BUT so far we used iOS icons not Material Design ones
+  - access Platform.OS to check
+ */
+// in App.js
+import { Platform } from 'react-native';
+...
+  <View style={styles.container}>
+    {Platform.OS === 'ios'
+      ? <Ionicons name="ios-pizza" size={100} color="red" />
+      : <Ionicons name="md-pizza" size={100} color="red" />
+    }
+  </View>
+
+// AddEntry.js - style it up
+...
+import { View, TouchableOpacity, Text, Platform, StyleSheet } from 'react-native';
+...
+import { white } from '../utils/colors';
+...
+function submitBtn({ onPress }) {
+  return (
+    <TouchableOpacity
+      style={Platform.OS === "iOS" ? styles.iosSubmitBtn : styles.androidSubmitBtn}
+      onPress={onPress}>
+      <Text style={styles.submitBtnText}>Submit</Text>
+    </TouchableOpacity>
+  );
+}
+...
+  render () {
+    if (this.props.alreadyLogged) {
+      return (
+        <View style={styles.center}>
+          <Ionicons
+            name={Platform.OS === 'ios' ? 'ios-happy-outline' : 'md-happy'}
+            size={100}
+          />
+          <Text>You already logged your...</Text>
+          <TextButton style={{padding: 10}} onPress={this.reset}>
+            Reset
+          </TextButton>
+        </View>
+      );
+    }
+
+    return (
+      <View style={styles.container}>
+        ...
+        return (
+          <View key={key} style={styles.row}>
+            ...
+          </View>
+        );
+        ...
+      </View>
+    );
+  }
+...
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: white,
+  },
+  row: {
+    flexDirection: 'row',
+    flex: 1,
+    alignItems: 'center'
+  },
+  iosSubmitBtn: {
+    backgroundColor: purple,
+    padding: 10,
+    borderRadius: 7,
+    height: 45,
+    marginLeft: 40,
+    marginRight: 40
+  },
+  androidSubmitBtn: {
+    backgroundColor: purple,
+    padding: 10,
+    paddingLeft: 30,
+    paddingRight: 30,
+    height: 45,
+    borderRadius: 2,
+    alignSelf: 'flex-end',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  submitBtnText: {
+    color: white,
+    fontSize: 22,
+    textAlign: 'center'
+  },
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 30,
+    marginRight: 30
+  }
+});
+
