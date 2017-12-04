@@ -179,6 +179,13 @@ https://reactarmory.com/answers/how-can-i-use-css-in-js-securely
 Flexbox:
 https://css-tricks.com/snippets/css/a-guide-to-flexbox/
 http://flexboxfroggy.com/
+https://medium.com/the-react-native-log/understanding-react-native-flexbox-layout-7a528200afd4
+
+Platform specific code:
+https://facebook.github.io/react-native/docs/platform-specific-code.html
+
+Dimensions for getting user's mobile screen width and height:
+http://facebook.github.io/react-native/releases/0.47/docs/dimensions.html
 
 
 -----
