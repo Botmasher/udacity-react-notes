@@ -392,7 +392,7 @@ const styles = StyleSheet.create({
 			</View>
 ...
 
-// try TouchableWithoutFeedback - does nothing but doesn't work with Text child so have a View child
+// try WithoutFeedback - does nothing but doesn't work with Text child so have a View child
 	// for special cases - /!\ avoid bc Native all about giving feedback to the user /!\
 ...
 			<View style={styles.container}>

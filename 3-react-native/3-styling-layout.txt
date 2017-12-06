@@ -12,6 +12,9 @@
 		2) presentation - JSX
 	- Presentation is more than just markup, it's also STYLES!
 	- React Native default pattern and a common pattern: just use JS
+    - camelCase rather than hyphenated
+    - object literal syntax e.g. commas not semicolons
+    - size integers are unitless
  */
 
 // example of applying styles inline to component through React JSX
@@ -246,7 +249,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     justifyContent: 'center',
-    alignItem: 'center',
+    alignItems: 'center',
     marginRight: 20
   }
 });
@@ -268,7 +271,7 @@ const styles = StyleSheet.create({
   - BUT so far we used iOS icons not Material Design ones
   - access Platform.OS to check
  */
-// in App.js
+// in App.js - testing out difft icons based on platform OS
 import { Platform } from 'react-native';
 ...
   <View style={styles.container}>
@@ -376,24 +379,28 @@ import { white, gray, purple } from '../utils/colors';
         ? <View style={{flexDirection: 'row'}}>
             <TouchableOpacity
               style={[styles.iosBtn, {borderTopRightRadius: 0, borderBottomRightRadius: 0}]}
-            ...>
+              onPress={onDecrement}
+            >
               <Entypo name="minus" size={30} color={purple} />
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.iosBtn, {borderTopLeftRadius: 0, borderBottomLeftRadius: 0}]}
-            ...>
+              onPress={onIncrement}
+            >
               <Entypo name="plus" size={30} color={purple} />
             </TouchableOpacity>
           </View>
         : <View style={{flexDirection: 'row'}}>
             <TouchableOpacity
               style={[styles.androidBtn, {borderTopRightRadius: 0, borderBottomRightRadius: 0}]}
-            ...>
+              onPress={onDecrement}
+            >
               <FontAwesome name="minus" size={30} color={white} />
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.androidBtn, {borderTopLeftRadius: 0, borderBottomLeftRadius: 0}]}
-            ...>
+              onPress={onIncrement}
+            >
               <FontAwesome name="plus" size={30} color={white} />
             </TouchableOpacity>
           </View>
@@ -444,7 +451,7 @@ import { purple } from '../utils/colors';
     {date}
   </Text>
 
-// UdaciSlider.js - 
+// UdaciSlider.js
 import React from 'react';
 import { View, Slider, Text, StyleSheet } from 'react-native';
 import { gray } from '../utils/colors';
@@ -781,5 +788,60 @@ const { width, height } = Dimensions.get('window');
 
 
 /* 5: How Professionals Handle Styling
-  
+    - separate out styles rather than having them inline c JSX components
+      - quality benefits: easier to read, understand and name
+      - performance benefits: reference id instead of creating new style object every render
+    - media queries
+      - not supported
+      - mostly functionally accomplished using flexbox
+      - in cases not coverd by flexbox use Dimensions api as mentioned above
+    - CSS in JS libraries
+      - Glamorous and Styled Components
+      - alternative to using StyleSheet.create api
  */
+// Styled Components as sort of game-changer for styling components
+yarn add styled-components
+
+import React from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
+import styled from 'styled-components/native';
+
+// styles should be a first-class citizen of your component
+  // - write as if it were normal CSS! (no camelCase, no object syntax)
+  // - build these styles directly into a component!!
+const CenterView = styled.View`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  background: #333;
+`;
+
+const WelcomeText = styled.Text`
+  color: white;
+  font-size: 20;
+`;
+
+const WelcomeBtn = styled.TouchableOpacity`
+  width: 100px;
+  height: 50px;
+  background: red;
+  border-radius: 5px;
+  justify-content: center;
+  align-items: center;
+`;
+
+export default class TestStyledComponent extends React.Component {
+  render() {
+    return (
+      <CenterView>
+        <WelcomeText>Hello world!</WelcomeText>
+        <WelcomeBtn onPress={() => alert(`Notice styled component passing props thru to underlying component`)}>
+          <WelcomeText>Press btn</WelcomeText>
+        </WelcomeBtn>
+      </CenterView>
+    );
+  }
+}
+
+// Instructor won't be using this throughout the rest of the guided class project, but we may
+// Great job - now it's onto Routes!
