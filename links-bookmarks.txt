@@ -187,6 +187,12 @@ https://facebook.github.io/react-native/docs/platform-specific-code.html
 Dimensions for getting user's mobile screen width and height:
 http://facebook.github.io/react-native/releases/0.47/docs/dimensions.html
 
+Tab navigation:
+https://reactnavigation.org/docs/navigators/tab
+|
+Status bar:
+https://facebook.github.io/react-native/docs/statusbar.html#props
+
 
 -----
 SLACK

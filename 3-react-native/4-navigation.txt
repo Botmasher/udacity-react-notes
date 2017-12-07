@@ -1,0 +1,131 @@
+/*
+	React Nanodegree
+	course 3: React Native
+	lesson 4: Navigation
+ */
+
+
+/* 1. Introduction
+	- navigating for the web associates url to display
+		- mapping a url to a specific component
+	- navigating for native
+		- router keeps track of route stack
+		- router pushes and pops routes off route stack
+	- let's look at React Navigations and Tab Navigator api
+ */
+
+
+/* 2. TabNavigator
+	- lets users navigate just by pressing tabs that render components
+	- tabs look different on iOS vs Android
+	- fully customizable (second argument passed to it)
+ */
+
+// imagine two views you want user to navigate vetween
+const Hello = () => (
+  <View>
+    <Text>Hello!</Text>
+  </View>
+);
+
+const Goodbye = () => (
+  <View>
+    <Text>Goodbye!</Text>
+  </View>
+);
+
+// add a tab object representing two tabs
+yarn add react-navigation
+
+import { TabNavigator } from 'react-navigation';
+
+const Tabs = TabNavigator({
+  Hello: {
+    screen: Hello
+  },
+  Goodbye: {
+    screen: Goodbye
+  },
+});
+
+// interestingly Tabs returns a component!
+export default class App extends React.Component {
+  render() {
+    return (
+      <Tabs />
+    );
+  }
+}
+
+
+// App.js - let's add this to our actual UdaciFitness app
+	// - navigate btwn History and AddEntry views
+	// - pass second object as argument for customizations and styling
+yarn add react-navigation
+
+import { TabNavigator } from 'react-navigation';
+import { purple, white } from '../utils/colors';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
+
+const Tabs = TabNavigator({
+	History: {
+		screen: History,
+		navigationOptions: {
+			tabBarLabel: 'History',
+			tabBarIcon: ({ tintColor }) => <Ionicons name="ios-bookmarks" size={30} color={tintColor} />
+		}
+	},
+	AddEntry: {
+		screen: AddEntry
+		navigationOptions: {
+			tabBarLabel: 'AddEntry',
+			tabBarIcon: ({ tintColor }) => <FontAwesome name="plus-square" size={30} color={tintColor} />
+		}
+	}
+}, {
+	navigationOptions: {
+		header: null
+	},
+	tabBarOptions: {
+		activeTintColor: Platform.OS === 'ios' ? purple : white,
+		style: {
+			height: 56,
+			backgroundColor: Platform.OS === 'ios' ? white : purple,
+			shadowColor: 'rgb(0, 0, 0, 0.24)',
+			shadowOffset: {
+				width: 0,
+				height: 3
+			},
+			shadowRadius: 6,
+			shadowOpacity: 3
+		}
+	}
+});
+
+// App.js - still here but lower in render now can return Tabs instead of History or AddEntry
+	...
+		<Tabs />
+
+
+// StatusBar
+	// so far we've been throwing in padding to account for status bar on screen
+	// let's instead use native's helpful customization
+import { StatusBar } from 'react-native';
+import { Constants } from 'expo'; 		// conveniently stores status bar height
+
+function UdaciStatusBar({ backgroundColor, ...props }) { 		// wrap status bar in view to control styling
+	return (
+		<View style={{backgroundColor, height: Constants.statusBarHeight}}>
+			<StatusBar translucent backgroundColor={backgroundColor} {...props} />
+		</View>
+	);
+}
+...
+		<UdaciStatusBar backgroundColor={purple} barStyle="light-content" />
+		<Tabs />
+
+
+
+
+/* 3. StackNavigator
+ */
