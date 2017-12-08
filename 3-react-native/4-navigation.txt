@@ -361,3 +361,82 @@ toHome = () => { 	// go back and notify you're going back FROM AddEntry
 		key: 'AddEntry'
 	}));
 };
+
+
+
+
+/* 4. DrawerNavigator
+	- allows us to navigate using a drawer using own UI on side of screen
+	- slides in from the side of screen
+	- open drawer to navigate to another route
+	- height generally spans the screen height
+	- the component returned by StackNavigator can be nested inside it
+ */
+
+// we won't be implementing in our app but here's an example
+import { DrawerNavigator } from 'react-navigation';
+import { FontAwesome } from '@expo/vector-icons';
+
+const Home = ({ navigation }) => (
+	<View>
+		<Text>The Home View</Text>
+		<TouchableOpacity onPress={() => navigation.navigate('DrawerOpen')}>
+			<Text>Press here to open the drawer!</Text>
+		</TouchableOpacity>
+	</View>
+);
+
+const Dashboard = ({ navigation }) => (
+  <View>
+    <Text>This is the Dashboard view</Text>
+    <TouchableOpacity onPress={() => navigation.navigate('DrawerOpen')}>
+      <Text>Press here to open the drawer!</Text>
+    </TouchableOpacity>
+  </View>
+);
+
+const Drawer = DrawerNavigator({
+  Home: {
+    screen: Home,
+    navigationOptions: {
+    	drawerLabel: 'Home',
+    	drawerIcon: () => <FontAwesome name="home" size={20} color="black" />
+    }
+  },
+  Dashboard: {
+    screen: Dashboard,
+    navigationOptions: {
+    	drawerLabel: 'Dashboard',
+    	drawerIcon: () => <FontAwesome name="dashboard" size={20} color="black" />
+    }
+  }
+});
+
+export default class App extends React.Component {
+  render() {
+    return (
+      <Drawer />
+    );
+  }
+}
+	// - now when you click the button you open the drawer
+	// - when you open the drawer you should see two icons
+	// - you should be able to navigate between components
+
+/*
+	Quiz: which applies to TabNavigator, DrawerNavigator or StackNavigator?
+	1) Screens are rendered and placed on top of each other
+	2) Screens are switched by using tab bar
+	3) Screens are switched by a menu that slides in
+ */
+
+
+/* 5. Conclusion
+	- TabNavigator: set up a screen with several tabs
+	- StackNavigator: app transitions between screens where each new screen is placed on top of a stack
+	- DrawerNavigator: set up a screen with a drawer navigation
+	- Nesting
+		- make sure to nest navigators to get different routing results
+		- nested navigators allow you to get any navigation you need
+	- Great! Now it's onto learning to leverage Native features 
+ */
