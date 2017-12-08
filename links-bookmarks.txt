@@ -193,6 +193,9 @@ https://reactnavigation.org/docs/navigators/tab
 Status bar:
 https://facebook.github.io/react-native/docs/statusbar.html#props
 
+Stack navigation:
+https://medium.com/@swathylenjini/stack-navigation-in-react-native-2cd00374ff3a
+
 
 -----
 SLACK

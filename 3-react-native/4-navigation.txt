@@ -76,7 +76,7 @@ const Tabs = TabNavigator({
 		}
 	},
 	AddEntry: {
-		screen: AddEntry
+		screen: AddEntry,
 		navigationOptions: {
 			tabBarLabel: 'AddEntry',
 			tabBarIcon: ({ tintColor }) => <FontAwesome name="plus-square" size={30} color={tintColor} />
@@ -91,7 +91,7 @@ const Tabs = TabNavigator({
 		style: {
 			height: 56,
 			backgroundColor: Platform.OS === 'ios' ? white : purple,
-			shadowColor: 'rgb(0, 0, 0, 0.24)',
+			shadowColor: 'rgba(0, 0, 0, 0.24)',
 			shadowOffset: {
 				width: 0,
 				height: 3
@@ -127,5 +127,237 @@ function UdaciStatusBar({ backgroundColor, ...props }) { 		// wrap status bar in
 
 
 
+
 /* 3. StackNavigator
+	- does NOT function like a first-in-first-out queue
+	- can render the component returned by TabNavigator (and so used together)
+	- animations render differently on difft platforms
+	- can leverage navigationOptions just like TabNavigator
  */
+
+// imagine an App.js with two basic components
+const Home = ({ navigation }) => (
+  <View>
+    <Text>This is the Home view</Text>
+    <TouchableOpacity onPress={() => navigation.navigate('Dashboard')}>
+      <Text>Press here for the Dashboard</Text>
+    </TouchableOpacity>
+  </View>
+);
+
+const Dashboard = () => (
+  <View>
+    <Text>This is the Dashboard</Text>
+  </View>
+);
+
+// now set up a stack to navigate to another route
+const Stack = StackNavigator({
+  Home: {
+    screen: Home
+  },
+  Dashboard: {
+    screen: Dashboard
+  }
+});
+
+// since it returns a component we can render that stack
+export default class App extends React.Component {
+  render() {
+    return (
+      <Stack />
+    );
+  }
+}
+
+
+// StackNavigator and TabNavigator often used together - nest one within the other
+	// - let's use this in our app to make each day clickable
+
+// create EntryDetail.js
+import React from 'react';
+import { View, Text } from 'react-native';
+
+class EntryDetail extends React.Component {
+	render() {
+		return (
+			<View>
+				<Text>Entry Detail</Text>
+			</View>
+		);
+	}
+}
+
+export default EntryDetail;
+
+
+// in App.js
+...
+import { TabNavigator, StackNavigator } from 'react-navigation';
+import EntryDetail from './components/EntryDetail';
+...
+const MainNavigator = StackNavigator({
+	Home: {
+		screen: Tabs,
+	},
+	EntryDetail: {
+		screen: EntryDetail,
+		navigationOptions: {
+			headerTintColor: white,
+			headerStyle: {
+				backgroundColor: purple
+			}
+		}
+	},
+});
+
+...
+			<UdaciStatusBar backgroundColor={purple} barStyle='light-content' />
+			<MainNavigator />
+
+// History.js - we now have access to this.props.navigator.navigate()!
+			: <TouchableOpacity onPress={() => this.props.navigation.navigate(
+					'EntryDetail',
+					{ entryId: key }
+				)}>
+					<MetricCard metrics={metrics} date={formattedDate} />
+				</TouchableOpacity>
+	// now check and you can see you navigate to an entry detail screen
+	// also notice we specified the white arrow you see
+
+// EntryDetail.js - let's actually pull the params we passed off the navigation 
+	// this gives the specific key we need to get our info for that day!
+	...
+			<View>
+				<Text>Entry Detail - {this.props.navigation.state.params.entryId}</Text>
+			</View>
+
+
+// EntryDetail.js - add our own navigationOptions to set a date at the top
+...
+class EntryDetail extends Component {
+	static navigationOptions = ({ navigation }) => {
+		const { entryId } = navigation.state.params;		// remember where this is coming from in History.js
+
+		const year = entryId.slice(0, 4);
+		const month = entryId.slice(5, 7);
+		const day = entryId.slice(8);
+
+		return {
+			title: `${month}/${day}/${year}`
+		};
+	};
+	...
+}
+
+
+// EntryDetail.js - connect this to redux so we can use that key, and let's style it
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { connect } from 'react-redux';
+import { white } from '../utils/colors';
+import MetricCard from './MetricCard';
+
+class EntryDetail extends React.Component {
+	static navigationOptions = ({ navigation }) => {
+		const { entryId } = navigation.state.params;
+		const year = entryId.slice(0, 4);
+		const month = entryId.slice(5, 7);
+		const day = entryId.slice(8);
+		return {
+			title: `${month}/${day}/${year}`
+		};
+	};
+	render() {
+		const { metrics } = this.props;
+		return (
+			<View style={styles.container}>
+				<MetricCard metrics={metrics} />
+				<Text>Entry Detail - {this.props.navigation.state.params.entryId}</Text>
+			</View>
+		);
+	}
+}
+
+function mapStateToProps(state, { navigation }) {
+	const { entryId } = navigation.state.params;
+	return {
+		entryId,
+		metrics: state[entryId]
+	};
+}
+
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		backgroundColor: white,
+		padding: 15
+	}
+});
+
+export default connect(mapStateToProps)(EntryDetail);
+
+
+// EntryDetail.js - now let's add a reset button to the UI for a specific day
+...
+import { addEntry } from '../actions';
+import { removeEntry } from '../utils/api';
+import { timeToString, getDailyReminderValue } from '../utils/helpers';
+import TextButton from './TextButton';
+...
+	reset = () => {
+		const { remove, goBack, entryId } = this.props;
+		remove();
+		goBack();
+		removeEntry(entryId);
+	}
+	shouldComponentUpdate(nextProps) {
+		// don't rerender unless today has info and today is false
+			// OTHERWISE MetricCard would render passing along undefined
+		return nextProps.metrics !== null && !nextProps.metrics.today;
+	}
+	render() {
+		return (
+			<View style={styles.container}>
+				<MetricCard metrics={metrics} />
+				<TextButton onPress={this.reset} style={{margin: 20}}>
+					Reset
+				</TextButton>
+			</View>
+		);
+	}
+}
+...
+mapDispatchToProps(dispatch, { navigation }) {
+	const { entryId } = navigation.state.params;
+	return {
+		remove: () => dispatch(addEntry({
+			[entryId]: timeToString === entryId
+				? getDailyReminderValue()
+				: null
+		})),
+		goBack: () => navigation.goBack(),
+
+	};
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(EntryDetail);
+
+
+// AddEntry.js - let's finish up our navigator section by navigating back home
+...
+import { NavigationActions } from 'react-navigation';
+...
+	this.toHome(); 		// add this
+	submitEntry({ key, entry });
+}
+reset = () => {
+	...
+	this.toHome(); 		// add this
+	removeEntry(key);
+}
+toHome = () => { 	// go back and notify you're going back FROM AddEntry
+	this.props.navigation.dispatch(NavigationActions.back({
+		key: 'AddEntry'
+	}));
+};
