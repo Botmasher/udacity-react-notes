@@ -199,6 +199,12 @@ https://medium.com/@swathylenjini/stack-navigation-in-react-native-2cd00374ff3a
 Drawer navigation:
 https://reactnavigation.org/docs/navigators/drawer
 
+Geolocation:
+https://docs.expo.io/versions/latest/sdk/location.html
+
+Animations:
+https://facebook.github.io/react-native/docs/animated.html
+
 
 -----
 SLACK

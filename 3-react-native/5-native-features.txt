@@ -72,3 +72,501 @@ import Live from './components/Live';
 }, {
 	...
 }
+
+
+
+/* 2. Geolocation
+	- recall we're building screen to show user's heading and speed
+	- subscribe to device's geolocation info
+	- expo provides getCurrentPositionAsync()
+ */
+
+import { Location, Permission } from 'expo';
+
+/*
+	Location api:
+		1. get user's position: 					getCurrentPositionAsync()
+		2. watch location for updates: 		watchPositionAsync()
+ 
+ 	Permission scenarios:
+ 		1. user gives permission to view their location
+ 		2. user neither grants nor denies access
+ 		3. user denies access
+ */
+
+// Live.js - let's style and UI the 'undetermined' section
+import { TouchableOpacity, StyleSheet } from 'react-native';
+import { Foundation } from '@expo/vector-icons';
+import { purple, white } from '../utils/colors';
+...
+	askPermission = () => {
+
+	};
+	...
+		// why deny us? we want to show you this cool UI!
+    if (status === 'undetermined') {
+      return (
+        <View style={styles.center}>
+          <Foundation name='alert' size={50} />
+          <Text>
+            You need to enable location services for this app.
+          </Text>
+          <TouchableOpacity style={styles.button} onPress={this.askPermission}>
+            <Text style={styles.buttonText}>
+              Enable
+            </Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+...
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'space-between'
+  },
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 30,
+    marginRight: 30,
+  },
+  button: {
+    padding: 10,
+    backgroundColor: purple,
+    alignSelf: 'center',
+    borderRadius: 5,
+    margin: 20,
+  },
+  buttonText :{
+    color: white,
+    fontSize: 20,
+  }
+});
+
+
+// Live.js - but what if status is DENIED?
+...
+    if (status === 'denied') {
+      return (
+        <View style={styles.center}>
+          <Foundation name='alert' size={50} />
+          <Text>
+            You denied your location. You can fix this by visiting your settings and enabling location services for this app.
+          </Text>
+        </View>
+      );
+    }
+
+
+// Live.js - best case in which user grants us permission
+	...
+    return (
+      <View style={styles.container}>
+        <View style={styles.directionContainer}>
+          <Text style={styles.header}>You're heading</Text>
+          <Text style={styles.direction}>
+            North
+          </Text>
+        </View>
+        <View style={styles.metricContainer}>
+          <View style={styles.metric}>
+            <Text style={[styles.header, {color: white}]}>
+              Altitude
+            </Text>
+            <Text style={[styles.subHeader, {color: white}]}>
+              {200} feet
+            </Text>
+          </View>
+          <View style={styles.metric}>
+            <Text style={[styles.header, {color: white}]}>
+              Speed
+            </Text>
+            <Text style={[styles.subHeader, {color: white}]}>
+              {300} MPH
+            </Text>
+          </View>
+        </View>
+      </View>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'space-between'
+  },
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 30,
+    marginRight: 30,
+  },
+  button: {
+    padding: 10,
+    backgroundColor: purple,
+    alignSelf: 'center',
+    borderRadius: 5,
+    margin: 20,
+  },
+  buttonText :{
+    color: white,
+    fontSize: 20,
+  },
+  directionContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  header: {
+    fontSize: 35,
+    textAlign: 'center',
+  },
+  direction: {
+    color: purple,
+    fontSize: 120,
+    textAlign: 'center',
+  },
+  metricContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: purple,
+  },
+  metric: {
+    flex: 1,
+    paddingTop: 15,
+    paddingBottom: 15,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    marginTop: 20,
+    marginBottom: 20,
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  subHeader: {
+    fontSize: 25,
+    textAlign: 'center',
+    marginTop: 5,
+  },
+});
+
+
+// Live.js - actually do the location stuff
+import { Location, Permissions } from 'expo';
+import { calculateDirection } from '../utils/helpers';
+...
+  componentDidMount() {
+    Permissions.getAsync(Permissions.LOCATION)
+      .then(({ status }) => {
+        if (status === 'granted') {
+          return this.setLocation();
+        }
+        this.setState(() => ({ status }));
+      })
+      .catch((error) => {
+        console.warn('Error getting Location permission: ', error);
+        this.setState(() => ({ status: 'undetermined' }));
+      });
+  }
+  askPermission = () => {
+  };
+	setLocation = () => {
+    Location.watchPositionAsync({
+      enableHighAccuracy: true,
+      timeInterval: 1,
+      distanceInterval: 1,
+    }, ({ coords }) => {
+      const newDirection = calculateDirection(coords.heading);
+      const { direction, bounceValue } = this.state;
+      this.setState(() => ({
+        coords,
+        status: 'granted',
+        direction: newDirection,
+      }));
+    });
+  };
+...
+
+// Live.js - ask the user for permission if not granted or if they click on button
+...
+  askPermission = () => {
+    Permissions.askAsync(Permissions.LOCATION)
+      .then(({ status }) => {
+        if (status === 'granted') {
+          return this.setLocation();
+        }
+        this.setState(() => ({ status }));
+      })
+      .catch((error) => console.warn('error asking Location permission: ', error));
+  };
+  ...
+  // convert into feet and mph
+    return (
+      <View style={styles.container}>
+        <View style={styles.directionContainer}>
+          <Text style={styles.header}>You're heading</Text>
+          <Text style={styles.direction}>
+            {direction}
+          </Text>
+        </View>
+        <View style={styles.metricContainer}>
+          <View style={styles.metric}>
+            <Text style={[styles.header, {color: white}]}>
+              Altitude
+            </Text>
+            <Text style={[styles.subHeader, {color: white}]}>
+              {Math.round(coords.altitude * 3.2808)} Feet
+            </Text>
+          </View>
+          <View style={styles.metric}>
+            <Text style={[styles.header, {color: white}]}>
+              Speed
+            </Text>
+            <Text style={[styles.subHeader, {color: white}]}>
+              {(coords.speed * 2.2369).toFixed(1)} MPH
+            </Text>
+          </View>
+        </View>
+      </View>
+    );
+  }
+}
+
+
+
+
+/* 3. Animations
+	- Animated is the built-in library
+	- goal: convey physical motion in UI
+	- focus: input -> transitions -> output
+	- basic types:
+		1. decay
+		2. spring
+		3. timing
+ */
+
+export default TestAnimClass extends React.Component {
+	state = {
+		opacity: new Animated.Value(0),
+		width: new Animated.Value(0),
+		height: new Animated.Value(0)
+	};
+	componentDidMount() {
+		const { opacity, width, height } = this.state;
+		// pass it value to mod, object of value and timing, and then chain start
+		Animated.timing(opacity, { toValue: 1, duration: 1000 })
+			.start();
+		Animated.spring(width, { toValue: 300, speed: 5 }) 	// defaults to speed of 12
+			.start();
+		Animated.spring(height, { toValue: 300, speed: 5 })
+			.start();
+	}
+ 	render() {
+ 		const { opacity, width, height } = this.state;
+ 		return (
+ 			<View style={styles.container}>
+ 				<Animated.Image
+ 					style={{opacity, width, height}}
+ 					source={{url: 'exampleimagesource.com/example-pic.png'}}
+ 				/>
+ 			</View>
+ 		);
+ 	}
+}
+
+
+// Live.js - now let's use these in our app!
+...
+import { View, Text, ActivityIndicator, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+
+export default class Live extends Component {
+	// preparing state for animation
+  state = {
+    coords: null,
+    status: null,
+    direction: '',
+    bounceValue: new Animated.Value(1)
+  };
+  componentDidMount() {
+    Permissions.getAsync(Permissions.LOCATION)
+      .then(({ status }) => {
+        if (status === 'granted') {
+          return this.setLocation();
+        }
+        this.setState(() => ({ status }));
+      })
+      .catch((error) => {
+        console.warn('Error getting Location permission: ', error);
+        this.setState(() => ({ status: 'undetermined' }));
+      })
+  }
+  askPermission = () => {
+    Permissions.askAsync(Permissions.LOCATION)
+      .then(({ status }) => {
+        if (status === 'granted') {
+          return this.setLocation();
+        }
+        this.setState(() => ({ status }));
+      })
+      .catch((error) => console.warn('error asking Location permission: ', error));
+  };
+  // this is where we'll do the animating as UI updates
+  setLocation = () => {
+    Location.watchPositionAsync({
+      enableHighAccuracy: true,
+      timeInterval: 1,
+      distanceInterval: 1,
+    }, ({ coords }) => {
+      const newDirection = calculateDirection(coords.heading);
+      const { direction, bounceValue } = this.state;
+      if (newDirection !== direction) {
+        Animated.sequence([
+          Animated.timing(bounceValue, { duration: 200, toValue: 1.04}),
+          Animated.spring(bounceValue, { toValue: 1, friction: 4})
+        ]).start();
+      }
+      this.setState(() => ({
+        coords,
+        status: 'granted',
+        direction: newDirection,
+      }));
+    })
+  };
+  // and here we'll render Animated.Text
+  render() {
+    const { status, coords, direction, bounceValue } = this.state;
+    if (status === null) {
+      return <ActivityIndicator style={{marginTop: 30}}/>
+    }
+    if (status === 'denied') {
+      return (
+        <View style={styles.center}>
+          <Foundation name='alert' size={50} />
+          <Text>
+            You denied your location. You can fix this by visiting your settings and enabling location services for this app.
+          </Text>
+        </View>
+      );
+    }
+    if (status === 'undetermined') {
+      return (
+        <View style={styles.center}>
+          <Foundation name='alert' size={50} />
+          <Text>
+            You need to enable location services for this app.
+          </Text>
+          <TouchableOpacity style={styles.button} onPress={this.askPermission}>
+            <Text style={styles.buttonText}>
+              Enable
+            </Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+    return (
+      <View style={styles.container}>
+        <View style={styles.directionContainer}>
+          <Text style={styles.header}>You're heading</Text>
+          <Animated.Text
+            style={[styles.direction, {transform: [{scale: bounceValue}]}]}>
+              {direction}
+          </Animated.Text>
+        </View>
+        <View style={styles.metricContainer}>
+          <View style={styles.metric}>
+            <Text style={[styles.header, {color: white}]}>
+              Altitude
+            </Text>
+            <Text style={[styles.subHeader, {color: white}]}>
+              {Math.round(coords.altitude * 3.2808)} Feet
+            </Text>
+          </View>
+          <View style={styles.metric}>
+            <Text style={[styles.header, {color: white}]}>
+              Speed
+            </Text>
+            <Text style={[styles.subHeader, {color: white}]}>
+              {(coords.speed * 2.2369).toFixed(1)} MPH
+            </Text>
+          </View>
+        </View>
+      </View>
+    );
+  }
+}
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'space-between'
+  },
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 30,
+    marginRight: 30,
+  },
+  button: {
+    padding: 10,
+    backgroundColor: purple,
+    alignSelf: 'center',
+    borderRadius: 5,
+    margin: 20,
+  },
+  buttonText :{
+    color: white,
+    fontSize: 20,
+  },
+  directionContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  header: {
+    fontSize: 35,
+    textAlign: 'center',
+  },
+  direction: {
+    color: purple,
+    fontSize: 120,
+    textAlign: 'center',
+  },
+  metricContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: purple,
+  },
+  metric: {
+    flex: 1,
+    paddingTop: 15,
+    paddingBottom: 15,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    marginTop: 20,
+    marginBottom: 20,
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  subHeader: {
+    fontSize: 25,
+    textAlign: 'center',
+    marginTop: 5,
+  },
+});
+
+	// with that you should now see animations when the direction/heading changes!
+
+
+
+/* 4. Local Notifications
+	- push notifications vs local notifications
+		- local happen entirely on the device itself
+		- local do not require external infrastructure
+		- local only require that the device be on
+		- push send from server when an event happens
+		- push go to all user devices when event happens
+
+	- we'll use this to give reminders if user has not logged info for the day
+	- iOS issue: do not appear automatically if app is in foreground and do not work in iOS simulator
+ */
+// 
