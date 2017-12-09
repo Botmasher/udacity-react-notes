@@ -6,5 +6,69 @@
 
 
 /* 1. Introduction
-	- 
+	- how animations work
+	- geolocation
+	- notifications
+	- the camera
+	- preparing your apps for the app stores
+
+	Within your app, things start getting fun!
+	- live detail view
+	- pulling info from the phone to render heading, altitude, speed
+	- we need to use the phone's api to get that info
+	- Android simulator won't work with this but iOS sim will
  */
+
+// create Live.js
+import React, { Component } from 'react';
+import { View, Text, ActivityIndicator } from 'react-native';
+
+export default class Live extends Component {
+	state = {
+		coords: null,
+		status: null,
+		direction: ''
+	};
+	render() {
+		const { status, coords, direction } = this.state;
+		// render a loading spinner
+		if (status === null) {
+			return <ActivityIndicator style={{marginTop: 30}} />
+		}
+		if (status === 'denied') {
+			return (
+				<View>
+					<Text>Denied</Text>
+				</View>
+			);
+		}
+		if (status === 'undetermined') {
+			return (
+				<View>
+					<Text>Undetermined</Text>
+				</View>
+			);
+		}
+		return (
+			<View>
+				<Text>Live</Text>
+				<Text>{JSON.stringify(this.state)}</Text>
+			</View>
+		);
+	}
+}
+
+// App.js - add this as a new tab
+...
+import Live from './components/Live';
+...
+	Live: {
+		screen: Live,
+		navigationOptions: {
+			tabBarLabel: 'Live',
+			tabBarIcon: ({ tintColor }) => <Ionicons name="ios-speedometer" size={30} color={tintColor} />
+		}
+	}
+}, {
+	...
+}
