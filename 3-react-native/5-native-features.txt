@@ -647,5 +647,51 @@ import { getMetricMetaInfo, timeToString, getDailyReminderValue, clearLocalNotif
 
 
 /* 5. Handling Photos
-  - 
+  - api for accessing photos over ios/android photo galleries
+  - ImagePicker provides way to select images from the mobile's library or by taking photo c the cam
+  - not used for this app but let's understand it for future apps
  */
+import React from 'react';
+import { View, Text, ImageEditor, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { ImagePicker } from 'expo';
+
+export default class TestApp extends React.Component {
+  state = {
+    image: null
+  };
+  pickImage = () => {
+    // we open the camera roll
+    ImagePicker.launchImageLibraryAsync({
+      allowEditing: true,
+      aspect: [2,1]
+    }).then((result) => {
+      // once we have that we crop it
+      if (result.cancelled) {
+        return;
+      }
+      ImageEditor.cropImage(result.uri, {
+        offset: {x: 0, y: 0},
+        size: {width: result.width, height: result.height},
+        displaySize: {width: 200, height: 100},
+        resizeMode: 'contain'
+      },
+      // if the cropping is successful we add it to our local state
+      // which will then show it to the view
+      (uri) => this.setState(() => ({ image: uri })),
+      () => console.log('error'))
+    });
+  };
+  render() {
+    const { image } = this.state;
+    return (
+      <View style={styles.container}>
+        <TouchableOpacity onPress={this.pickImage}>
+          <Text>Open camera</Text>
+        </TouchableOpacity>
+        {image && (
+          <Image style={styles.image} source={{uri: image}} />
+        )}
+      </View>
+    );
+  }
+}
