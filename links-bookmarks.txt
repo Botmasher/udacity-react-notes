@@ -205,6 +205,17 @@ https://docs.expo.io/versions/latest/sdk/location.html
 Animations:
 https://facebook.github.io/react-native/docs/animated.html
 
+Local notifications:
+https://docs.expo.io/versions/latest/sdk/notifications.html
+
+Using ImagePicker to handle photos:
+https://docs.expo.io/versions/latest/sdk/imagepicker.html
+
+Building an app for the store:
+https://developer.apple.com/library/content/documentation/LanguagesUtilities/Conceptual/iTunesConnect_Guide/Chapters/UploadingBinariesforanApp.html#//apple_ref/doc/uid/TP40011225-CH38-SW1
+https://support.google.com/googleplay/android-developer/answer/113469?hl=en
+https://docs.expo.io/versions/latest/guides/building-standalone-apps.html
+
 
 -----
 SLACK
