@@ -695,3 +695,62 @@ export default class TestApp extends React.Component {
     );
   }
 }
+
+
+
+
+
+/* 6. App Store Preparation
+  - settings you want to configure
+  - launching an app is more than just the app's code
+  - it's also icon, name, description that shows up in the store
+    - notification change icon, to see this you'll actually need to build the app
+  - bundle/package identifier for the store for your app
+
+  - apk/ipa file is what you need to build and upload
+  - it's a long process
+  - building and bundling is the only part we'll walk through here
+
+  1) Install exp
+    npm install -g exp
+  2) make sure your app is currently running
+  3) build it for a platform
+    exp build:android
+  4) Generate a keystore or let them handle it (choose 1 if you don't understand this well)
+  5) the build will take "forever"
+  6) after 15 mins you'll get a url, enter into browser and grab your .apk
+  7) go to the store and give them that downloaded file
+
+  (for iOS it's the same steps but you run exp build:ios and you get an .ipa file) 
+ */
+
+// app.json - to prep our Udacifitness for the store this is what we can add
+{
+  "expo": {
+    "sdkVersion": "19.0.0",
+    "orientation": "portrait",
+    "name": "Udacifitness",
+    "description": "The best triathlon training app in the world.",
+    "slug": "udacifitness",
+    "version": "1.0",
+    "icon": "https://maxcdn.icons8.com/Color/PNG/512/Sports/triathlon-512.png",
+    "notification": {
+      "icon": "http://www.student-scholarships.com/images/made/img/featured/nav_basketball_45_45.png"
+    },
+    "ios": {
+     "bundleIdentifier": "org.udacifitness.exp",
+    },
+    "android": {
+     "package": "org.udacifitness.exp",
+    }
+  },
+}
+
+
+
+/* 7. & 8. Lesson & Course Outro
+  - we learned how to animate, track location, set up notifications, play with camera and prepare apps for stores
+  - that's it for the lesson and the React Native course!
+  - so be confident venturing away from the web for a bit and build native apps
+  - get your app public and let him check it out
+ */
