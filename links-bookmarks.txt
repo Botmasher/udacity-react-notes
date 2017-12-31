@@ -217,6 +217,17 @@ https://support.google.com/googleplay/android-developer/answer/113469?hl=en
 https://docs.expo.io/versions/latest/guides/building-standalone-apps.html
 
 
+------
+CAREER
+------
+
+Web design blog:
+http://alistapart.com/
+
+Look through Udacity posts for ideas:
+https://career-resource-center.udacity.com/featured-jobs
+
+
 -----
 SLACK
 -----
