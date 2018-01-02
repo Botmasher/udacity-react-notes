@@ -230,6 +230,9 @@ https://career-resource-center.udacity.com/featured-jobs
 Personal branding and storytelling:
 https://blog.udacity.com/2015/12/storytelling-personal-branding-and-getting-hired.html
 
+Projects to impress an employer and getting into open source:
+https://career-resource-center.udacity.com/
+
 
 -----
 SLACK
