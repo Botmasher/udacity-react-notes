@@ -233,6 +233,15 @@ https://blog.udacity.com/2015/12/storytelling-personal-branding-and-getting-hire
 Projects to impress an employer and getting into open source:
 https://career-resource-center.udacity.com/
 
+Udacity's GitHub profile checklist:
+https://docs.google.com/document/d/1a9AKnNyqfGgdQV5ohPCN5H9ntnEUhMptWMwVBWURCN0/pub?embedded=true
+
+Udacity's GitHub profile rubric:
+https://docs.google.com/document/d/15B7SBSQ1iKqUjo1UpHHVtqonCzxZwqBaV2lC4mN5N1U/pub?embedded=true
+
+Course on writing ReadMes for humans:
+https://www.udacity.com/course/writing-readmes--ud777
+
 
 -----
 SLACK
