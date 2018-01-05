@@ -242,6 +242,9 @@ https://docs.google.com/document/d/15B7SBSQ1iKqUjo1UpHHVtqonCzxZwqBaV2lC4mN5N1U/
 Course on writing ReadMes for humans:
 https://www.udacity.com/course/writing-readmes--ud777
 
+Interview rubric:
+https://docs.google.com/document/d/1TNLwa_ThJlliCk6Dk-_bkZU3ZMZOTEmezE2eX7i9rEg/pub?embedded=true
+
 
 -----
 SLACK
