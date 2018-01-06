@@ -245,6 +245,9 @@ https://www.udacity.com/course/writing-readmes--ud777
 Interview rubric:
 https://docs.google.com/document/d/1TNLwa_ThJlliCk6Dk-_bkZU3ZMZOTEmezE2eX7i9rEg/pub?embedded=true
 
+Interview tips:
+https://career-resource-center.udacity.com/interviews
+
 
 -----
 SLACK
